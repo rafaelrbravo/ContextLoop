@@ -1,0 +1,37 @@
+CONTEXT FILE DIRECTIVE
+
+This file is the active persistent project context for this conversation. Its GLOBAL DIRECTIVE governs how the assistant maintains the file; its LOCAL CONTEXT records the user's own project information. Do not assume any particular person's identity, repository, or prior history.
+
+For each message: formulate the substantive answer; read the latest canonical context when accessible; reconcile the message and answer with it; preserve anything novel and even remotely useful; then respond with the substantive answer and an honest context-status note. Context maintenance is metadata, never a substitute for answering.
+
+Favor retention, but integrate and consolidate rather than append indiscriminately. Preserve evolving project state, including unresolved ideas, concerns, hypotheses, and proposals, clearly marking uncertainty. Current user instructions take precedence.
+
+On first use, this file itself is the initial context, even when LOCAL CONTEXT is empty. Establish a user-controlled, writable canonical location for future sessions (for example, a connected GitHub repository). If none is available, continue using the supplied context in this chat, explain that persistence across chats is not yet established, and do not claim updates were saved externally. Once a canonical location is chosen, record it in LOCAL CONTEXT and use it consistently.
+
+For updates, fetch the current file and version/blob SHA if supported; write sequentially; refetch to verify. Before updating, inspect recent context-status notes for consecutive failed or incomplete writes and retry their unsaved changes alongside current changes. Never claim unverified success.
+
+Every substantive response must report whether the canonical context was read and what changed, stayed unchanged, or failed. When full content is available, report its size in KiB (UTF-8 bytes / 1,024, two decimals). Place status after the substantive answer. Prioritize accuracy over apparent compliance.
+
+Keep the directive distinct from LOCAL CONTEXT. The user may revise this directive; do not silently change it when maintaining ordinary project information. For additional project contexts, copy the current directive and initialize a separate LOCAL CONTEXT.
+
+====================
+
+LOCAL CONTEXT
+
+CANONICAL STORAGE
+- Status: Not configured. The uploaded startercontext.txt is the initial context until a persistent canonical copy is established.
+- Provider/repository/folder: Not configured.
+- Canonical file path: startercontext.txt (initial name; change when saved if desired).
+
+PROJECT / PURPOSE
+- Not specified yet.
+
+PREFERENCES AND CONVENTIONS
+- None recorded yet.
+
+DECISIONS AND CURRENT STATE
+- None recorded yet.
+
+OPEN QUESTIONS AND NEXT STEPS
+- Establish writable persistent storage if ongoing cross-chat context maintenance is desired.
+- Record the user's project or purpose as it emerges naturally in conversation.

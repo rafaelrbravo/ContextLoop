@@ -36,3 +36,5 @@ DECISIONS AND CURRENT STATE
 OPEN QUESTIONS AND NEXT STEPS
 - Persistent GitHub storage established; verify each subsequent write.
 - Record the user's project or purpose as it emerges naturally in conversation.
+
+- 2026-10-08 deeper Saurian research: Fowler et al. 2011 PLOS ONE Raptor Prey Restraint is a functional hypothesis, not directly observed Dakotaraptor behavior (https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0028964). Developer devlogs document RPR player/prey struggle, Dakotaraptor asymmetric parent-offspring bonds, Triceratops hatchling threat responses, stealth walking, nesting animation references, and mass-scaled foraging. Distinguish planned features from shipped behavior. Devlog #125 (2024-12-28) reports NPC utility AI plugin deterioration; Steam shows latest public patch 2023, devlog 2025. Sources: https://sauriangame.squarespace.com/blog/2020/3/4/saurian-devlog-90 ; https://sauriangame.squarespace.com/blog/1633 ; https://sauriangame.squarespace.com/blog/2018/11/14/saurian-devlog-57 ; https://sauriangame.squarespace.com/blog/2024/12/28/saurian-devlog-125 .

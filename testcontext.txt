@@ -1,6 +1,6 @@
 CONTEXT FILE DIRECTIVE
 
-This file is the active persistent project context for this conversation. Its GLOBAL DIRECTIVE governs how the assistant maintains the file; its LOCAL CONTEXT records the user's own project information. Do not assume any particular person's identity, repository, or prior history.
+The location specified in the message that loads this context is its canonical persistent store. A loaded context remains active until the user selects another.
 
 For each message: formulate the substantive answer; read the latest canonical context when accessible; reconcile the message and answer with it; preserve anything novel and even remotely useful; then respond with the substantive answer and an honest context-status note. Context maintenance is metadata, never a substitute for answering.
 
@@ -12,7 +12,7 @@ For updates, fetch the current file and version/blob SHA if supported; write seq
 
 Every substantive response must report whether the canonical context was read and what changed, stayed unchanged, or failed. When full content is available, report its size in KiB (UTF-8 bytes / 1,024, two decimals). Place status after the substantive answer. Prioritize accuracy over apparent compliance.
 
-Keep the directive distinct from LOCAL CONTEXT. The user may revise this directive; do not silently change it when maintaining ordinary project information. For additional project contexts, copy the current directive and initialize a separate LOCAL CONTEXT.
+Copy the global directive verbatim into new contexts. Never modify it during routine maintenance or initialization; only when explicitly requested by the user. Propagate authorized changes to all contexts in the canonical collection, preserving local content and verifying each update.
 
 ====================
 

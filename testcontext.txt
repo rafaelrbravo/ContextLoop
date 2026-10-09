@@ -19,9 +19,9 @@ Keep the directive distinct from LOCAL CONTEXT. The user may revise this directi
 LOCAL CONTEXT
 
 CANONICAL STORAGE
-- Status: Not configured. The uploaded startercontext.txt is the initial context until a persistent canonical copy is established.
-- Provider/repository/folder: Not configured.
-- Canonical file path: startercontext.txt (initial name; change when saved if desired).
+- Status: Configured; GitHub is the canonical writable location.
+- Provider/repository/folder: GitHub, rafaelrbravo/ContextLoop (default branch).
+- Canonical file path: testcontext.txt.
 
 PROJECT / PURPOSE
 - Not specified yet.
@@ -33,5 +33,5 @@ DECISIONS AND CURRENT STATE
 - None recorded yet.
 
 OPEN QUESTIONS AND NEXT STEPS
-- Establish writable persistent storage if ongoing cross-chat context maintenance is desired.
+- Persistent GitHub storage established; verify each subsequent write.
 - Record the user's project or purpose as it emerges naturally in conversation.

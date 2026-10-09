@@ -83,7 +83,7 @@ The global directive governs this cycle; the local context stores project knowle
 4. Click **Load unpacked** and select the **extracted folder containing `manifest.json`** (not the ZIP).
 5. Open or reload [ChatGPT](https://chatgpt.com). Prompt buttons appear at the top of the left sidebar.
 
-Keep the extracted folder in place: Chrome loads the unpacked extension from that folder. This release is labeled **v46** in its archive filename; the Chrome extension manifest reports version **0.18.1**.
+Keep the extracted folder in place: Chrome loads the unpacked extension from that folder. The currently linked archive is **v46** (manifest version **0.18.1**) and does **not** include Auto-Continue. A tested Auto-Continue-enabled extension will be uploaded separately; until then, the instructions below describe the newer functionality but are not available in this linked archive.
 
 ### Configure your prompts
 
@@ -115,6 +115,25 @@ ChatGPT Prompt Launcher also makes it easier to recognize ChatGPT tabs:
 - **Unassociated tabs:** ChatGPT tabs not associated with a saved prompt use a black icon with a white border, with the fill fading while working.
 
 These indicators are inferred from ChatGPT's interface, so changes to the website may affect their reliability.
+
+### Auto-Continue (newer extension release)
+
+**Auto-Continue** lets ChatGPT continue a multi-step assignment across multiple responses without requiring you to type “continue” each time. It is useful for long coding, research, testing, or document tasks that benefit from repeated work-and-review cycles. It does not run independently of ChatGPT, and it cannot guarantee that the assistant will complete a task correctly.
+
+In an Auto-Continue-enabled release, a **repeat-icon button** appears on the far left of the ChatGPT composer, immediately beside the **+** button. Clicking it opens a settings panel; it does **not** start a loop. Review the settings and click **Run** to begin.
+
+- **Continuation prompt:** The message sent to ChatGPT after each completed response, for example: “Continue working toward the original assignment. Review progress and remaining tasks, and make substantive progress before stopping.”
+- **Cycles:** Set the maximum number of continuation messages.
+- **Overall timeout:** Set a limit on the total elapsed time. The loop waits for the current response to finish rather than interrupting it mid-response.
+- **Stop string:** Configure a completion marker, such as `AUTOCONTINUE_COMPLETE`. When ChatGPT outputs that marker as a standalone line in its completed reply, the loop stops.
+- **Run / Stop:** Start deliberately with **Run**, or end a running loop manually with **Stop**.
+- **Progress and elapsed time:** The panel shows cycle progress, status, and elapsed minutes since the loop started. Terminal status should explain why the loop stopped.
+
+A typical workflow is to give ChatGPT a substantial assignment, open Auto-Continue, set a reasonable cycle/time limit and continuation prompt, and press **Run**. ChatGPT then receives another continuation message after each finished response until a stopping condition is reached. You can also tell ChatGPT to output the exact stop marker when it considers the assignment complete.
+
+**Safety and limitations:** Review generated work and results rather than assuming unattended iterations are correct. Auto-Continue relies on ChatGPT's page structure, which may change; it can stop or fail when navigating, reloading, closing the tab, or when the interface changes. Use conservative limits for expensive or sensitive work. Enable **only one version** of ChatGPT Prompt Launcher at a time; multiple enabled copies can conflict over tab favicon coloring.
+
+**Release note:** The repository currently links v46, which predates Auto-Continue. The fixed Auto-Continue extension will be linked here once uploaded. Do not expect the controls above in v46.
 
 ### Troubleshooting
 

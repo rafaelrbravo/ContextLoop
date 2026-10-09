@@ -24,13 +24,14 @@ CANONICAL STORAGE
 - Canonical file path: testcontext.txt.
 
 PROJECT / PURPOSE
-- Not specified yet.
+- Explore dinosaur-themed video games; specific longer-term purpose not yet specified.
 
 PREFERENCES AND CONVENTIONS
 - None recorded yet.
 
 DECISIONS AND CURRENT STATE
-- None recorded yet.
+- 2026-10-08: User requested research on dinosaur-based video games. Initial survey covered ARK: Survival Ascended/Evolved, The Isle, Path of Titans, Saurian, Jurassic World Evolution 3, Paleo Pines, Dino Crisis, Turok, Deathground, FEROCIOUS, and upcoming The Lost Wild/Jurassic Park: Survival/Instinction. Useful research axis: play-as-dinosaur vs survive-dinosaurs vs park management, scientific realism vs gameplay, ecosystem AI, survival and emergent multiplayer. No genre/platform preference specified.
+
 
 OPEN QUESTIONS AND NEXT STEPS
 - Persistent GitHub storage established; verify each subsequent write.

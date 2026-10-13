@@ -1,170 +1,327 @@
 # ContextLoop
 
-**Persistent, user-controlled context for ChatGPT.**
+**Persistent project memory for ChatGPT, with optional prompt launching and automated continuation.**
 
-ContextLoop maintains context across ChatGPT conversations using plain-text files stored in GitHub. Each project has a persistent context file that ChatGPT reads, maintains, and updates as you work.
+ContextLoop is a workflow built around **plain-text context files in your own GitHub repository**. ChatGPT reads the current project context, performs your task, integrates useful decisions and progress into that file, and verifies the saved result. You can start a fresh conversation and resume where you left off.
 
-**No additional software installation is required.** You need ChatGPT with access to a connected GitHub repository. A Chrome extension is an optional convenience.
+The optional **ChatGPT Prompt Launcher** Chrome extension adds one-click context loading, customizable colored bookmarks, tab activity indicators, prompt import/export, **Auto-Continue**, and **conversation rollover** for extended tasks.
 
-## Quick start
+**Start with just GitHub and ChatGPT.** The extension is optional, and the context-file workflow works without it.
 
-### 1. Create a GitHub repository
+## Contents
 
-Create a public or private repository for your context files. Connect GitHub to ChatGPT and authorize access to read and update the repository.
+- [What you can do](#what-you-can-do)
+- [Quick start: persistent context](#quick-start-persistent-context)
+- [How context maintenance works](#how-context-maintenance-works)
+- [Working with multiple contexts](#working-with-multiple-contexts)
+- [Install Prompt Launcher v91](#install-prompt-launcher-v91)
+- [Save, launch, and transfer prompts](#save-launch-and-transfer-prompts)
+- [Colored bookmarks and tab indicators](#colored-bookmarks-and-tab-indicators)
+- [Auto-Continue: long-running assignments](#auto-continue-long-running-assignments)
+- [Automatic conversation rollover](#automatic-conversation-rollover)
+- [Recommended workflows](#recommended-workflows)
+- [Troubleshooting and recovery](#troubleshooting-and-recovery)
+- [Security, privacy, and limitations](#security-privacy-and-limitations)
 
-### 2. Add a context file
+## What you can do
 
-Copy [startercontext.txt](startercontext.txt) into your repository and rename it for your project, for example `research.txt`.
+| Capability | What it provides | Requires extension? |
+| --- | --- | --- |
+| Persistent project context | Preserve decisions, findings, constraints, and unfinished work across conversations | No |
+| Autonomous context maintenance | Ask ChatGPT to reconcile new information with the canonical GitHub file | No |
+| Verified saves and version history | Refetch after writing; recover older versions using Git history | No |
+| Multiple projects | Keep independent context files and explicitly switch among them | No |
+| Prompt buttons | Launch reusable prompts from the ChatGPT sidebar | Yes |
+| Colored bookmark launchers | Open a saved prompt using a colored Chrome bookmark | Yes |
+| Tab state indicators | Identify prompt-associated tabs and distinguish working/ready states | Yes |
+| Prompt transfer | Copy/paste prompt definitions between extension installations | Yes |
+| Auto-Continue | Repeatedly send a continuation message after completed responses | Yes |
+| Stop conditions | Stop after a cycle limit, elapsed-time limit, or assistant completion marker | Yes |
+| Conversation rollover | Start a successor chat after a configured number of cycles and resume the loop | Yes |
 
-Each file contains a **global directive** governing context maintenance and a **local context** holding project-specific decisions, findings, preferences, progress, and open questions. You can keep multiple context files together in the repository root.
+ContextLoop is not a separate AI model or a background service. ChatGPT and its connected GitHub tools do the context work; the extension automates browser interactions.
 
-### 3. Start a conversation
+## Quick start: persistent context
 
-Open a new ChatGPT conversation and paste this prompt, substituting your repository and filename:
+### 1. Prepare GitHub access
 
-> Load and read `research.txt` from my GitHub repository `your-username/your-repository` and use it as the active project context for this conversation. Follow the directive in that file, and treat that GitHub file as the canonical location for all future context updates.
+Create a GitHub repository for your contexts, public or private. Connect GitHub in ChatGPT and ensure the connection has permission to **read and update** the chosen repository. Exact connection controls vary by account and interface.
 
-ChatGPT should read the file and confirm that it has been loaded.
+A typical repository looks like:
+
+```text
+my-contexts/
+  research.txt
+  career.txt
+  software.txt
+```
+
+Keep unrelated projects in separate files so loading one project does not overwhelm the conversation with information from another.
+
+### 2. Create your first context
+
+Copy [startercontext.txt](startercontext.txt) into your own repository and rename it, for example `research.txt`. The starter contains a common **global directive** and a **project-specific context** section. Replace the sample project details with your own goals, constraints, existing progress, decisions, and unresolved questions.
+
+The global directive is the operating agreement: it tells ChatGPT which GitHub file is canonical, when to read it, how to integrate changes, how to verify writes, and how to report failures. The local context is the evolving project memory.
+
+**Do not put passwords, tokens, or other secrets in context files.** A private repository is appropriate for nonpublic project details, but it is not a secrets manager.
+
+### 3. Load it in a new ChatGPT conversation
+
+Copy and customize this prompt:
+
+> Load and read `research.txt` from my GitHub repository `your-username/my-contexts` and use it as the active project context for this conversation. Treat that GitHub file as the canonical persistent context and follow its directive.
+
+Wait for ChatGPT to confirm that it actually fetched the file. If access fails, fix the GitHub connection or repository permissions rather than assuming the context was loaded.
 
 ### 4. Work normally
 
-Continue talking to ChatGPT as usual. The directive instructs it to read the current context, preserve useful new information, save updates to GitHub, and verify writes. You should not need to explicitly ask it to remember things or save progress.
+Ask questions, research ideas, write code, analyze documents, and make decisions. The context directive asks ChatGPT to preserve useful durable information automatically. You can also explicitly say:
 
-Each substantive response should include a brief context-status report.
+- "Record that decision in the active context."
+- "Consolidate the context without losing unresolved issues."
+- "Review the current context before answering."
+- "Update the plan and preserve what remains unfinished."
 
-### 5. Resume later
+A successful save should be **verified by refetching the file**. If a write fails, the assistant should report the unsaved changes rather than claiming success.
 
-Start another conversation with the same loading prompt to retrieve the latest saved context.
+### 5. Resume in another conversation
 
-## Everyday usage
+Open a fresh chat and use the same loading prompt. ChatGPT should read the **latest canonical GitHub version**, not rely on its memory of the old conversation. This is particularly useful when chats become long, slow, or difficult to navigate.
 
-Once ChatGPT is familiar with your setup, shorter instructions often work:
+## How context maintenance works
 
-- **"Load meta."** Load a familiar context by shorthand.
-- **"Switch to your career context."** Change the active context.
-- **"Update your context with this decision."** Explicitly preserve information.
-- **"Check your context for what we decided earlier."** Consult the canonical file.
-- **"Read your software context too."** Use information from another project.
+The intended cycle is:
 
-You can refer to the active file as **"your context"** and ask ChatGPT to reorganize, consolidate, correct, or remove information in its local context.
+1. **Read** the current canonical GitHub file and its blob SHA.
+2. **Do the substantive work** requested by the user.
+3. **Reconcile** new decisions, progress, useful hypotheses, and unresolved tasks with the existing project state.
+4. **Integrate** changes into the best existing sections rather than endlessly appending chat transcripts.
+5. **Write** using the current blob SHA, avoiding blind overwrites.
+6. **Verify** by refetching the updated file.
+7. **Report** whether the context was read, updated, unchanged, or blocked.
 
-These shortcuts depend on ChatGPT having enough information to identify the intended repository and file. In a fresh conversation, the full loading prompt is more reliable.
+Context maintenance should be secondary to accomplishing the task, not a replacement for it. The global directive is intended to remain unchanged during routine maintenance; modify it only when explicitly requested. This is a **prompt-level convention**, not an access-control mechanism.
 
-### Protected global directive
+### What belongs in a context?
 
-ChatGPT is instructed **not to modify the global directive** during routine context maintenance. It should only change the directive when you explicitly request that change. This protection is instructional, not a technical access restriction.
+Preserve objectives, nonnegotiable constraints, preferences that affect work, important decisions and rationale, completed work, rejected approaches (to avoid repeating them), pending tasks, known failures, and recovery instructions. Condense repetitive discussion into clear current state. Distinguish established results from hypotheses and tentative plans.
 
-### Multiple contexts
+For long projects, consider sections such as **Goal**, **Constraints**, **Current state**, **Completed**, **Open questions**, **Next steps**, and **Lessons learned**. Git history can retain obsolete versions, allowing the current file to stay useful.
 
-While one context is active, ChatGPT can read another to combine information across projects. Reading another context does not automatically make it active or authorize modifying it; the current context remains active until you switch.
+### Failure recovery
 
-## How ContextLoop works
+A GitHub update is not complete just because a tool call was attempted. If the update fails, keep the intended changes in the conversation, refetch the latest file and SHA, retry safely, and report anything still pending. If the previous context-status note reported unsaved changes, reconcile those before declaring the next turn complete.
 
-1. **Read:** Fetch the latest canonical GitHub context.
-2. **Work:** Answer questions or carry out tasks.
-3. **Reconcile:** Identify new information worth preserving.
-4. **Save:** Integrate it into the context file.
-5. **Verify:** Refetch to confirm the update.
-6. **Report:** Briefly describe context status.
+## Working with multiple contexts
 
-The global directive governs this cycle; the local context stores project knowledge. GitHub provides persistent storage, version history, and direct file access.
+Maintain separate files for different areas of work. For example, `career.txt` may track opportunities and rejected options, while `software.txt` tracks APIs, tests, and bugs.
 
-## Optional: ChatGPT Prompt Launcher Chrome extension
+- **Switch active context:** "Load `software.txt` from `your-username/my-contexts` and make it active."
+- **Consult without switching:** "Read `career.txt` for relevant constraints, but keep `research.txt` active."
+- **Cross-project synthesis:** "Compare the decisions in these two contexts; don't merge their files."
+- **Consolidate:** "Remove duplication and obsolete statements from the active local context, preserving important history and unresolved work."
 
-**ChatGPT Prompt Launcher** is an optional Chrome extension for quickly launching saved prompts in ChatGPT. It works with ContextLoop catalyst prompts, but it can also launch any other frequently used ChatGPT prompt.
+Short aliases like "load career" are convenient after the repository/file mapping is established, but a fresh conversation should use a fully qualified repository and filename.
 
-**ContextLoop works without the extension.** The extension does not read, store, or synchronize your GitHub context files; it simply launches the prompts you configure.
+## Install Prompt Launcher v91
 
-### Install in Chrome
+**Current published package:** [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) — extension manifest version **0.19.40**.
 
-1. Download [ChatGPT-Prompt-Launcher-v46.zip](ChatGPT-Prompt-Launcher-v46.zip) and extract it to a permanent folder on your computer.
-2. Open `chrome://extensions` in Chrome.
-3. Turn on **Developer mode**.
-4. Click **Load unpacked** and select the **extracted folder containing `manifest.json`** (not the ZIP).
-5. Open or reload [ChatGPT](https://chatgpt.com). Prompt buttons appear at the top of the left sidebar.
+The extension is distributed as an **unpacked Chrome extension**, not through the Chrome Web Store.
 
-Keep the extracted folder in place: Chrome loads the unpacked extension from that folder. The currently linked archive is **v46** (manifest version **0.18.1**) and does **not** include Auto-Continue. A tested Auto-Continue-enabled extension will be uploaded separately; until then, the instructions below describe the newer functionality but are not available in this linked archive.
+1. Download the ZIP and extract it into a permanent directory.
+2. In Chrome, open `chrome://extensions`.
+3. Enable **Developer mode**.
+4. Click **Load unpacked** and choose the extracted directory containing `manifest.json` at its top level.
+5. Open or reload [ChatGPT](https://chatgpt.com).
+6. Click the Prompt Launcher toolbar icon to open its settings page. Saved prompt buttons appear near the top of ChatGPT's left sidebar.
 
-### Configure your prompts
+**Important:** Keep the extracted folder in place. Chrome loads the extension from that folder. Do not choose the ZIP itself or a parent directory that does not contain `manifest.json`.
 
-Click the extension's toolbar icon to open **ChatGPT Prompt Launcher** settings.
+The extension requests Chrome `storage`, `bookmarks`, and `tabs` permissions, and page access for `chatgpt.com` and `www.chatgpt.com`. Review the extracted source before installation. Avoid enabling multiple copies at the same time: they can interfere with tab state and browser automation.
+
+## Save, launch, and transfer prompts
+
+### Create a saved context launcher
+
+Open the extension settings using its toolbar icon, then:
 
 1. Click **Add prompt button**.
-2. Give the entry a short name, such as **Research** or **Career**.
-3. Paste the full context-loading prompt from the Quick start section, changing the repository and filename to match your context.
-4. Choose a color using the hue slider. Changes are saved in the extension's local browser storage.
-5. Repeat for additional contexts. Drag entries by their handles to reorder them.
+2. Enter a recognizable name such as "Research".
+3. Paste the **complete context-loading prompt**, including the repository and filename.
+4. Choose its color with the hue slider.
+5. Repeat for other projects or frequently reused prompts.
 
-You can also save general-purpose prompts that have nothing to do with ContextLoop.
+The prompt name is a label, not the text sent to ChatGPT. You can also save non-context prompts, such as a code-review instruction or a writing workflow. Reorder prompts by dragging their handles in Settings; this does not reorder Chrome bookmarks.
 
-### Launch prompts
+### Launch behavior
 
-- **Normal click:** Launch and automatically submit the saved prompt in the current ChatGPT tab.
-- **Ctrl-click or middle-click:** Use the browser's native new-tab behavior to launch the prompt in another tab.
-- **Bookmark launcher:** In settings, click **Add bookmark** for a prompt. Its bookmark is added at the far left of the bookmarks bar, with the prompt's chosen color. Rename or recolor the prompt to update its associated bookmark. You can also remove individual bookmarks or use **Delete all bookmarks** to remove Prompt Launcher bookmarks.
+- **Normal click:** Launch the saved prompt in the current ChatGPT tab.
+- **Ctrl-click / middle-click:** Use Chrome's native new-tab behavior.
+- **Saved bookmark:** Click its colored bookmark to launch the associated prompt.
 
-The bookmark launcher uses a URL hosted at `rafaelrbravo.com` to open the associated prompt. The extension requires Chrome permissions for local storage, bookmarks, and tabs, plus access to ChatGPT pages.
+The launcher submits the saved prompt; it does not itself fetch or synchronize GitHub files. The connected ChatGPT session performs the GitHub read/write operations after receiving your prompt.
 
-### Tab colors and status indicators
+### Copy and paste prompts between installations
 
-ChatGPT Prompt Launcher also makes it easier to recognize ChatGPT tabs:
+Settings includes **Copy prompts** and **Paste prompts**. Use these to migrate prompt definitions between compatible extension installations.
 
-- **Prompt color:** Tabs launched through a saved prompt use that prompt's selected hue.
-- **Working versus ready:** The favicon is faded while ChatGPT is working and returns to full color when it stops or is awaiting attention.
-- **Chat versus Work:** A **circle** represents Chat mode; a **square** represents Work mode.
-- **Unassociated tabs:** ChatGPT tabs not associated with a saved prompt use a black icon with a white border, with the fill fading while working.
+The transfer includes **names, prompt text, colors, and order**. It does **not** transfer bookmarks. Pasting replaces the destination prompt set after confirmation and assigns new prompt identifiers, so existing bookmark associations in that installation may no longer work. Review your destination prompts and regenerate bookmarks afterward. This is a configuration transfer, not a GitHub context backup.
 
-These indicators are inferred from ChatGPT's interface, so changes to the website may affect their reliability.
+## Colored bookmarks and tab indicators
 
-### Auto-Continue (newer extension release)
+### Create and maintain bookmark launchers
 
-**Auto-Continue** lets ChatGPT continue a multi-step assignment across multiple responses without requiring you to type “continue” each time. It is useful for long coding, research, testing, or document tasks that benefit from repeated work-and-review cycles. It does not run independently of ChatGPT, and it cannot guarantee that the assistant will complete a task correctly.
+For a nonempty saved prompt, use **Add bookmark** in Settings. Prompt Launcher places its bookmark at the far left of Chrome's bookmarks bar. You can update/refresh or delete an individual prompt bookmark, or use **Delete all bookmarks** to remove the extension's own bookmarks without deleting unrelated browser bookmarks.
 
-In an Auto-Continue-enabled release, a **repeat-icon button** appears on the far left of the ChatGPT composer, immediately beside the **+** button. Clicking it opens a settings panel; it does **not** start a loop. Review the settings and click **Run** to begin.
+Bookmarks use the selected prompt color. Bookmark color is intended to stay fixed; the **tab favicon** changes to indicate ChatGPT state. If a bookmark looks wrong, use its refresh/update control and allow Chrome time to update its favicon cache.
 
-- **Continuation prompt:** The message sent to ChatGPT after each completed response, for example: “Continue working toward the original assignment. Review progress and remaining tasks, and make substantive progress before stopping.”
-- **Cycles:** Set the maximum number of continuation messages.
-- **Overall timeout:** Set a limit on the total elapsed time. The loop waits for the current response to finish rather than interrupting it mid-response.
-- **Stop string:** Configure a completion marker, such as `AUTOCONTINUE_COMPLETE`. When ChatGPT outputs that marker as a standalone line in its completed reply, the loop stops.
-- **Run / Stop:** Start deliberately with **Run**, or end a running loop manually with **Stop**.
-- **Progress and elapsed time:** The panel shows cycle progress, status, and elapsed minutes since the loop started. Terminal status should explain why the loop stopped.
+Bookmark launchers use color-specific pages hosted under `rafaelrbravo.com` to help Chrome register their favicons and redirect into ChatGPT. The prompt text itself remains in local extension storage rather than being placed in the hosted URL.
 
-A typical workflow is to give ChatGPT a substantial assignment, open Auto-Continue, set a reasonable cycle/time limit and continuation prompt, and press **Run**. ChatGPT then receives another continuation message after each finished response until a stopping condition is reached. You can also tell ChatGPT to output the exact stop marker when it considers the assignment complete.
+### Read tab indicators
 
-**Safety and limitations:** Review generated work and results rather than assuming unattended iterations are correct. Auto-Continue relies on ChatGPT's page structure, which may change; it can stop or fail when navigating, reloading, closing the tab, or when the interface changes. Use conservative limits for expensive or sensitive work. Enable **only one version** of ChatGPT Prompt Launcher at a time; multiple enabled copies can conflict over tab favicon coloring.
+- **Colored icon:** Tab is associated with a saved prompt and uses its selected hue.
+- **Faded icon:** ChatGPT appears to be working.
+- **Full-color icon:** ChatGPT appears to have stopped or is awaiting attention.
+- **Circle:** Chat mode.
+- **Square:** Work mode.
+- **Unassociated tabs:** Use a neutral indicator rather than a saved prompt's hue.
 
-**Release note:** The repository currently links v46, which predates Auto-Continue. The fixed Auto-Continue extension will be linked here once uploaded. Do not expect the controls above in v46.
+These states are inferred from ChatGPT's web interface. They are convenience signals, not authoritative proof that a request succeeded or a response is complete.
 
-### Troubleshooting
+## Auto-Continue: long-running assignments
 
-If the buttons do not appear, reload ChatGPT after installing the extension and confirm it is enabled at `chrome://extensions`. If Chrome cannot load the extension, make sure you selected the extracted folder containing `manifest.json`. If a bookmark launcher stops working, check that the extension is installed and that its corresponding prompt still exists.
+Auto-Continue repeatedly sends a configurable follow-up message **after a completed assistant response**. It is useful for multi-stage research, coding, test/fix cycles, and systematic reviews where the assistant should evaluate progress and continue.
 
-This is an unpacked Chrome extension, not a Chrome Web Store installation. Review the permissions and source files before installing software you download from GitHub.
+### Start a loop
 
-## Design principles
+1. Give ChatGPT a substantial initial assignment, including its goal, constraints, and completion criteria.
+2. Open Auto-Continue using the **repeat-style button beside the composer + button**.
+3. Review the **Continuation prompt**, **Cycles**, **Timeout (minutes)**, **Rollover every N cycles**, and **Stop string** fields.
+4. Click **Run**. Opening the settings panel alone does not start a loop.
+5. Watch the progress and status text. Click **Cancel loop** to stop manually.
 
-**User ownership:** Files remain under your control.
+A useful continuation prompt is:
 
-**Continuity:** Resume work across independent conversations.
+> Continue working toward the original assignment. Review progress and remaining tasks, and make substantive progress before stopping. When the assignment is genuinely complete, output AUTOCONTINUE_COMPLETE on its own line.
 
-**Automatic maintenance:** Preserve useful information without explicit save commands.
+### Understand each setting
 
-**Transparency:** Inspect and edit human-readable text directly.
+| Setting | Behavior |
+| --- | --- |
+| Continuation prompt | The message sent on each subsequent cycle |
+| Cycles | Maximum cumulative continuation messages; **0 or a negative integer means unlimited** |
+| Timeout (minutes) | Maximum overall elapsed time; **0 or a negative value means unlimited** |
+| Rollover every N cycles | Open a successor conversation after every N completed cycles; **0 or negative disables rollover** |
+| Stop string | A marker that stops the loop when emitted as a standalone line in a completed assistant reply |
+| Run | Start the loop using the current settings |
+| Cancel loop | End the active loop manually |
 
-**Verification:** Check writes rather than assuming success.
+The extension persists the entered settings. Unlimited settings remove the corresponding limit; they do **not** bypass ChatGPT account quotas or guarantee indefinite operation.
 
-**Protected instructions:** Leave the global directive unchanged unless explicitly asked.
+**Recommended first experiment:** Use 3–5 cycles and a short timeout with a harmless task. Confirm the continuation messages submit correctly and that the stop marker works before attempting long unattended runs.
 
-**Cross-project flexibility:** Consult multiple contexts without merging them.
+### Completion markers
 
-**Simplicity:** No separate database, server, or background service.
+The default marker is `AUTOCONTINUE_COMPLETE`. Tell ChatGPT to output that exact string **on a line by itself only when the assignment is finished**. Avoid placing the marker as a standalone line in ordinary intermediate responses, because it may terminate the loop prematurely.
 
-## Limitations
+If the task is open-ended, use a cycle or timeout limit instead of relying solely on the model to declare completion.
 
-ContextLoop relies on ChatGPT following instructions and having writable GitHub access; it is not a guaranteed synchronization service. Reads and writes may fail, information may be missed or imperfectly summarized, and failed updates may need to be retried. Information is reliably available in a new conversation only after a successful save.
+### Important operating constraints
 
-Short loading commands may be ambiguous; specify the repository and filename when needed. Large files require more context to process. Avoid storing passwords, tokens, or secrets; use private repositories for nonpublic information.
+Auto-Continue depends on the browser tab and ChatGPT's current page structure. It can fail when ChatGPT changes its composer, response markup, or submission controls; when a tab is closed or navigated away; or when a rate/usage limit interrupts work. The extension's loop is not an independent scheduled background job. Review outputs, especially before allowing consequential file writes, external actions, or expensive operations.
+
+## Automatic conversation rollover
+
+Rollover is designed to reduce the burden of very long ChatGPT conversations. After a specified number of completed continuation cycles, the extension can open a **new conversation**, relaunch the **same saved Prompt Launcher prompt**, and resume Auto-Continue.
+
+### Prerequisites
+
+- Start from a tab associated with a **saved Prompt Launcher prompt** (ideally your fully qualified ContextLoop loading prompt).
+- Ensure that prompt reliably loads the canonical GitHub context.
+- Make sure the assistant saves and verifies important progress before rollover.
+- Set a **positive** value for **Rollover every N cycles**.
+
+Rollover is not merely a visual tab switch: the new conversation must reconstruct its working state from the saved context and the relaunch prompt. **Anything not successfully checkpointed may be lost.**
+
+### What the handoff attempts to preserve
+
+The v91 implementation carries forward the original loop start time, cumulative completed cycles, configured limits, continuation message, stop string, and saved prompt identity. It opens a successor tab, waits for the relaunched prompt to produce a completed response, and then resumes continuation. The predecessor is intended to close only after the successor confirms the loop resumed; if handoff fails, the predecessor may remain available for recovery.
+
+The new tab's **conversation history is not copied**. The canonical GitHub file is what makes continuity possible.
+
+### Choosing an interval
+
+There is no established universal ChatGPT conversation-length threshold. A practical starting point is **30 cycles**; **40–50** may be preferable if frequent new-chat creation causes failures. Test with a small interval first, then adjust based on actual browser behavior.
+
+A good assignment instruction is:
+
+> Work systematically, maintain an accurate completed/remaining checklist in the active GitHub context, and verify the checkpoint before any conversation rollover. Do not repeat already completed work. Output AUTOCONTINUE_COMPLETE only when all completion criteria are met.
+
+**Rollover does not circumvent model usage limits.** New-chat creation itself can fail or encounter throttling. It is best treated as a recovery/organization feature, not a guarantee of unlimited work.
+
+## Recommended workflows
+
+### Research or literature review
+
+Keep a context with scope, search strategy, verified sources, conclusions, rejected leads, and open questions. Ask ChatGPT to search systematically, record coverage, and continue from the next unreviewed item. Use Auto-Continue with finite limits. Preserve citations and distinguish verified findings from leads requiring confirmation.
+
+### Software development
+
+Track repository, architecture, coding conventions, tests run, known failures, and next steps. Ask ChatGPT to implement and test one meaningful increment per cycle, update the checkpoint, and avoid repeating solved bugs. Review diffs and tests; do not interpret repeated assistant messages as proof that code was validated.
+
+### Career or opportunity discovery
+
+Track geographic constraints, organizations reviewed, postings identified, exclusions, and remaining coverage. Ask for exhaustive, systematic exploration rather than revisiting the same leads. Use the context to record what was checked and when; verify live postings separately.
+
+### Writing and long documents
+
+Store target audience, outline, style constraints, completed sections, outstanding revisions, and source verification status. Continue one section or verification pass at a time. Preserve important source corrections so they are not reintroduced in later conversations.
+
+### Managing several projects
+
+Give each project its own context file and Prompt Launcher button/color. Use a separate cross-project synthesis conversation when needed rather than merging unrelated project histories.
+
+## Troubleshooting and recovery
+
+| Symptom | What to check |
+| --- | --- |
+| GitHub context does not load | Confirm the repository name, filename, GitHub connection, and permissions; request an explicit fetch |
+| GitHub update fails | Refetch the latest file and SHA; retry sequentially; retain unsaved changes and report them |
+| Extension does not load | Extract the ZIP and select the folder with `manifest.json`; check `chrome://extensions` errors |
+| Sidebar buttons missing | Reload ChatGPT, verify extension enabled, and check that prompts were saved |
+| Bookmark shows wrong icon | Refresh/update that bookmark; allow favicon caching; verify the saved prompt exists |
+| Prompt does not submit | Check the current ChatGPT page, enabled composer, and whether the extension's selectors still match |
+| Auto-Continue appears stuck | Check whether ChatGPT is still generating, a response has actually completed, or an error/survey has altered the page |
+| "Send unavailable" | The extension may not recognize an otherwise enabled Send button; avoid duplicate manual/automatic submissions |
+| "Too many requests" or "You've hit your limit" | Stop or pause automation, preserve progress, and retry later; these errors do not establish a specific quota |
+| Rollover fails | Check that the originating tab has a saved prompt identity and that its canonical context checkpoint was verified |
+| Prompt transfer breaks bookmarks | Recreate/refresh bookmarks after pasting prompts; bookmark IDs are not transferred |
+| Multiple icons or strange tab behavior | Disable duplicate Prompt Launcher installations |
+
+**When diagnosing a failure**, capture the extension version, exact error text, current tab state, whether ChatGPT's native Stop/Send control is visible, and the last verified GitHub checkpoint. Do not assume that a stalled loop means the assistant made no progress, or that a visible completed answer means the extension successfully detected completion.
+
+## Security, privacy, and limitations
+
+- **You control the canonical data:** Your GitHub repository stores the plain-text contexts. Git commit history provides versioning and rollback.
+- **Private does not mean secret-proof:** Connected tools and anyone with repository access can potentially read its contents. Avoid credentials, access tokens, sensitive personal data, and unnecessary confidential information.
+- **GitHub access matters:** A read-only connection can load context but cannot persist updates. Check permissions before relying on continuity.
+- **Prompt Launcher stores prompt definitions locally:** Copy/paste transfer moves definitions between installations; it does not synchronize your GitHub contexts.
+- **Bookmark redirects use a hosted domain:** The extension's bookmark color mechanism relies on `rafaelrbravo.com`; review that behavior if it affects your privacy requirements.
+- **The extension interacts with ChatGPT's interface:** Website changes, focus behavior, Chrome throttling, browser restarts, or account limits can interrupt automation.
+- **Context instructions are not guarantees:** ChatGPT can omit details, misunderstand state, fail tool calls, or make imperfect summaries. Inspect important changes and verify important facts independently.
+- **Rollover is not a backup:** Only the last successfully verified GitHub state is reliably available to a fresh conversation.
+- **No external service is required for context persistence beyond GitHub and ChatGPT:** The extension is optional browser convenience software; it does not replace GitHub as the context store.
+
+## Project files and versions
+
+- [startercontext.txt](startercontext.txt) — copyable starting context with the global directive.
+- [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) — current Chrome extension archive (manifest version `0.19.40`).
+- [LICENSE](LICENSE) — Apache License 2.0.
+
+The instructions here describe the published v91 package. Some advanced behaviors are inherently dependent on ChatGPT's current website and should be tested in your browser before trusting unattended workflows.
 
 ## License
 
-ContextLoop is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
+ContextLoop is licensed under the **Apache License, Version 2.0**. See [LICENSE](LICENSE).

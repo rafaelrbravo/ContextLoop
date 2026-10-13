@@ -23,19 +23,19 @@ The optional **ChatGPT Prompt Launcher** Chrome extension provides one-click con
 
 ## What you can do
 
-| Capability | What it provides | Requires extension? |
-| --- | --- | --- |
-| Persistent project context | Preserve decisions, findings, constraints, and unfinished work across conversations | No |
-| Autonomous context maintenance | Ask ChatGPT to reconcile new information with the canonical GitHub file | No |
-| Verified saves and version history | Refetch after writing; recover older versions using Git history | No |
-| Multiple projects | Keep independent context files and explicitly switch among them | No |
-| Prompt buttons | Launch reusable prompts from the ChatGPT sidebar | Yes |
-| Colored bookmark launchers | Open a saved prompt using a colored Chrome bookmark | Yes |
-| Tab state indicators | Identify prompt-associated tabs and distinguish working/ready states | Yes |
-| Prompt transfer | Copy/paste prompt definitions between extension installations | Yes |
-| Auto-Continue | Repeatedly send a continuation message after completed responses | Yes |
-| Stop conditions | Stop after a cycle limit, elapsed-time limit, or assistant completion marker | Yes |
-| Conversation rollover | Start a successor chat after a configured number of cycles and resume the loop | Yes |
+ContextLoop's core workflow works through ChatGPT and a GitHub repository:
+
+- **Persistent project context:** Carry decisions, findings, constraints, and unfinished work across conversations.
+- **Context maintenance:** Have ChatGPT reconcile new information with the canonical GitHub file, verify saves by rereading it, and use Git history to recover earlier versions.
+- **Multiple projects:** Keep separate context files for unrelated projects and explicitly switch between them.
+
+The optional Chrome extension adds browser conveniences:
+
+- **Prompt buttons and colored bookmarks:** Launch reusable prompts from the ChatGPT sidebar or a Chrome bookmark.
+- **Tab indicators:** Recognize prompt-associated tabs and distinguish working from ready states.
+- **Prompt transfer:** Copy and paste prompt definitions between extension installations.
+- **Auto-Continue:** Send a continuation message after each completed response, with cycle limits, time limits, and an assistant completion marker.
+- **Conversation rollover:** Start a successor chat after a configured number of cycles and resume the loop.
 
 ContextLoop is not a separate AI model or a background service. ChatGPT and its connected GitHub tools do the context work; the extension automates browser interactions.
 

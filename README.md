@@ -121,6 +121,8 @@ Aliases such as "load career" are useful after establishing the repository and f
 
 ## Install Prompt Launcher v91
 
+**ChatGPT Prompt Launcher** is an optional Chrome extension that adds reusable prompt buttons to ChatGPT and supports colored bookmark launchers, tab activity indicators, prompt transfer, Auto-Continue, and conversation rollover. It automates browser interactions; it is not required to use ContextLoop's GitHub-based project context.
+
 **Published package:** [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) (manifest version **0.19.40**).
 
 Install it as an **unpacked Chrome extension**; it is not distributed through the Chrome Web Store:

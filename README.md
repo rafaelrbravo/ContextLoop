@@ -89,10 +89,10 @@ Start a fresh chat with the same loading prompt. ChatGPT should fetch the **late
 
 The directive asks ChatGPT to:
 
-1. **Read** the canonical GitHub file and its current blob SHA.
+1. **Read** the canonical GitHub file and its current blob SHA (a unique identifier GitHub uses for that version of the file).
 2. **Complete the user's task** and identify decisions, progress, useful hypotheses, and unresolved work.
 3. **Reconcile and integrate** that information into the existing context rather than append chat transcripts.
-4. **Write** using the current SHA to avoid blind overwrites.
+4. **Write** using that identifier to avoid overwriting a newer version accidentally.
 5. **Verify** the update by refetching the file.
 6. **Report** whether the context was read, updated, unchanged, or blocked.
 
@@ -106,7 +106,7 @@ For larger projects, use sections such as **Goal**, **Constraints**, **Current s
 
 ### Failure recovery
 
-An attempted GitHub write is not a completed update. On failure, retain the intended changes in the conversation, refetch the latest file and SHA, retry safely, and report anything still unsaved. Reconcile any pending changes from the previous context-status note before declaring the next turn complete.
+An attempted GitHub write is not a completed update. On failure, retain the intended changes in the conversation, refetch the latest file and its identifier, retry safely, and report anything still unsaved. Reconcile any pending changes from the previous context-status note before declaring the next turn complete.
 
 ## Working with multiple contexts
 

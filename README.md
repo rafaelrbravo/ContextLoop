@@ -89,38 +89,37 @@ Start a fresh chat with the same loading prompt. ChatGPT should fetch the **late
 
 ## How context maintenance works
 
-The intended cycle is:
+The directive asks ChatGPT to:
 
-1. **Read** the current canonical GitHub file and its blob SHA.
-2. **Do the substantive work** requested by the user.
-3. **Reconcile** new decisions, progress, useful hypotheses, and unresolved tasks with the existing project state.
-4. **Integrate** changes into the best existing sections rather than endlessly appending chat transcripts.
-5. **Write** using the current blob SHA, avoiding blind overwrites.
-6. **Verify** by refetching the updated file.
-7. **Report** whether the context was read, updated, unchanged, or blocked.
+1. **Read** the canonical GitHub file and its current blob SHA.
+2. **Complete the user's task** and identify decisions, progress, useful hypotheses, and unresolved work.
+3. **Reconcile and integrate** that information into the existing context rather than append chat transcripts.
+4. **Write** using the current SHA to avoid blind overwrites.
+5. **Verify** the update by refetching the file.
+6. **Report** whether the context was read, updated, unchanged, or blocked.
 
-Context maintenance should be secondary to accomplishing the task, not a replacement for it. The global directive is intended to remain unchanged during routine maintenance; modify it only when explicitly requested. This is a **prompt-level convention**, not an access-control mechanism.
+The task comes first; context maintenance records its useful results. The global directive should change only when explicitly requested. It is a **prompt-level convention**, not an access-control mechanism.
 
 ### What belongs in a context?
 
-Preserve objectives, nonnegotiable constraints, preferences that affect work, important decisions and rationale, completed work, rejected approaches (to avoid repeating them), pending tasks, known failures, and recovery instructions. Condense repetitive discussion into clear current state. Distinguish established results from hypotheses and tentative plans.
+Keep objectives, constraints, relevant preferences, decisions and rationale, completed work, rejected approaches, open tasks, failures, and recovery instructions. Summarize repetitive discussion; distinguish confirmed results from hypotheses and tentative plans.
 
-For long projects, consider sections such as **Goal**, **Constraints**, **Current state**, **Completed**, **Open questions**, **Next steps**, and **Lessons learned**. Git history can retain obsolete versions, allowing the current file to stay useful.
+For larger projects, use sections such as **Goal**, **Constraints**, **Current state**, **Completed**, **Open questions**, **Next steps**, and **Lessons learned**. Git history preserves older versions while the current file stays focused.
 
 ### Failure recovery
 
-A GitHub update is not complete just because a tool call was attempted. If the update fails, keep the intended changes in the conversation, refetch the latest file and SHA, retry safely, and report anything still pending. If the previous context-status note reported unsaved changes, reconcile those before declaring the next turn complete.
+An attempted GitHub write is not a completed update. On failure, retain the intended changes in the conversation, refetch the latest file and SHA, retry safely, and report anything still unsaved. Reconcile any pending changes from the previous context-status note before declaring the next turn complete.
 
 ## Working with multiple contexts
 
-Maintain separate files for different areas of work. For example, `career.txt` may track opportunities and rejected options, while `software.txt` tracks APIs, tests, and bugs.
+Keep separate files for distinct projects—for example, `career.txt` for opportunities and rejected options, and `software.txt` for APIs, tests, and bugs.
 
-- **Switch active context:** "Load `software.txt` from `your-username/my-contexts` and make it active."
+- **Switch:** "Load `software.txt` from `your-username/my-contexts` and make it active."
 - **Consult without switching:** "Read `career.txt` for relevant constraints, but keep `research.txt` active."
-- **Cross-project synthesis:** "Compare the decisions in these two contexts; don't merge their files."
+- **Compare:** "Compare the decisions in these two contexts; don't merge their files."
 - **Consolidate:** "Remove duplication and obsolete statements from the active local context, preserving important history and unresolved work."
 
-Short aliases like "load career" are convenient after the repository/file mapping is established, but a fresh conversation should use a fully qualified repository and filename.
+Aliases such as "load career" are useful after establishing the repository and file mapping. In a new conversation, specify the repository and filename.
 
 ## Install Prompt Launcher v91
 

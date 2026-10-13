@@ -238,7 +238,7 @@ The default is `AUTOCONTINUE_COMPLETE`. Instruct ChatGPT to emit it **alone on a
 
 ### Important operating constraints
 
-Auto-Continue requires the browser tab to remain open and relies on ChatGPT's page structure. Changes to the composer, response layout, or submit controls can break it; navigation, closing the tab, and usage limits can also interrupt it. It is **not a scheduled background job**. Review results before consequential file writes, external actions, or expensive operations.
+Auto-Continue requires the browser tab to remain open and relies on ChatGPT's page structure. Changes to the composer, response layout, or submit controls can break it; navigation, closing the tab, and rate or usage limits can also interrupt it. It is **not a scheduled background job**. Review results before consequential file writes, external actions, or expensive operations.
 
 ## Automatic conversation rollover
 

@@ -121,7 +121,7 @@ Aliases such as "load career" are useful after establishing the repository and f
 
 ## Optional browser tools: ChatGPT Prompt Launcher
 
-**ChatGPT Prompt Launcher** is an optional Chrome extension for turning prompts you use repeatedly into easy-to-launch buttons and bookmarks. It also adds visual tab indicators and can automate repeated follow-up messages with Auto-Continue, including opening a fresh chat and resuming a loop when conversation rollover is configured. You can use ContextLoop without the extension; the extension does not store, maintain, or synchronize your project context. That work is done by ChatGPT using the GitHub context file.
+**ChatGPT Prompt Launcher** is an optional Chrome extension that makes saved prompts easier to reuse through buttons and bookmarks. It also provides tab indicators, prompt transfer, Auto-Continue, and conversation rollover. It does not maintain project context; ChatGPT reads and updates that in your GitHub file.
 
 ### How the pieces fit together
 
@@ -152,7 +152,7 @@ Keep the extracted folder in place; Chrome loads the extension from it. The exte
 
 ## Save, launch, and transfer prompts
 
-A saved prompt is reusable instruction text that Prompt Launcher sends to ChatGPT. For ContextLoop, it is usually the full prompt that tells ChatGPT which GitHub repository and context file to load. The button saves that instruction, not the project context itself; the GitHub file remains the persistent record between conversations.
+For ContextLoop, save the full loading prompt—the instruction that tells ChatGPT which GitHub repository and context file to load. The button stores that instruction; the GitHub file remains the persistent project record.
 
 ### Save your first context-loading prompt
 

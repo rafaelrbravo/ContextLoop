@@ -123,69 +123,66 @@ Aliases such as "load career" are useful after establishing the repository and f
 
 ## Install Prompt Launcher v91
 
-**Current published package:** [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) — extension manifest version **0.19.40**.
+**Published package:** [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) (manifest version **0.19.40**).
 
-The extension is distributed as an **unpacked Chrome extension**, not through the Chrome Web Store.
+Install it as an **unpacked Chrome extension**; it is not distributed through the Chrome Web Store:
 
-1. Download the ZIP and extract it into a permanent directory.
-2. In Chrome, open `chrome://extensions`.
-3. Enable **Developer mode**.
-4. Click **Load unpacked** and choose the extracted directory containing `manifest.json` at its top level.
-5. Open or reload [ChatGPT](https://chatgpt.com).
-6. Click the Prompt Launcher toolbar icon to open its settings page. Saved prompt buttons appear near the top of ChatGPT's left sidebar.
+1. Download the ZIP and extract it to a permanent folder.
+2. Open `chrome://extensions` and enable **Developer mode**.
+3. Select **Load unpacked**, then choose the folder with `manifest.json` at its top level—not the ZIP or its parent folder.
+4. Open or reload [ChatGPT](https://chatgpt.com).
+5. Click the extension's toolbar icon to open Settings. Saved prompt buttons appear near the top of ChatGPT's left sidebar.
 
-**Important:** Keep the extracted folder in place. Chrome loads the extension from that folder. Do not choose the ZIP itself or a parent directory that does not contain `manifest.json`.
-
-The extension requests Chrome `storage`, `bookmarks`, and `tabs` permissions, and page access for `chatgpt.com` and `www.chatgpt.com`. Review the extracted source before installation. Avoid enabling multiple copies at the same time: they can interfere with tab state and browser automation.
+Keep the extracted folder in place; Chrome loads the extension from it. The extension requests `storage`, `bookmarks`, and `tabs` permissions and access to `chatgpt.com` and `www.chatgpt.com`. Review its source before installing. Avoid enabling multiple copies, which can interfere with tab indicators and automation.
 
 ## Save, launch, and transfer prompts
 
 ### Create a saved context launcher
 
-Open the extension settings using its toolbar icon, then:
+Open Settings from the toolbar icon:
 
 1. Click **Add prompt button**.
-2. Enter a recognizable name such as "Research".
-3. Paste the **complete context-loading prompt**, including the repository and filename.
-4. Choose its color with the hue slider.
-5. Repeat for other projects or frequently reused prompts.
+2. Give it a name, such as "Research".
+3. Paste the **full loading prompt**, including repository and filename.
+4. Select a color with the hue slider.
+5. Repeat for other contexts or reusable prompts.
 
-The prompt name is a label, not the text sent to ChatGPT. You can also save non-context prompts, such as a code-review instruction or a writing workflow. Reorder prompts by dragging their handles in Settings; this does not reorder Chrome bookmarks.
+The name is only a label; the prompt text is what ChatGPT receives. You can also save non-context prompts, such as code review or writing instructions. Drag the handles in Settings to reorder prompts; Chrome bookmarks do not move with them.
 
 ### Launch behavior
 
-- **Normal click:** Launch the saved prompt in the current ChatGPT tab.
-- **Ctrl-click / middle-click:** Use Chrome's native new-tab behavior.
-- **Saved bookmark:** Click its colored bookmark to launch the associated prompt.
+- **Click:** Send the saved prompt in the current ChatGPT tab.
+- **Ctrl-click or middle-click:** Open it in a new tab using Chrome's native behavior.
+- **Bookmark:** Launch the associated prompt from its colored bookmark.
 
-The launcher submits the saved prompt; it does not itself fetch or synchronize GitHub files. The connected ChatGPT session performs the GitHub read/write operations after receiving your prompt.
+The extension submits prompts but does not read or synchronize GitHub. ChatGPT uses its connected GitHub tools to do that work.
 
 ### Copy and paste prompts between installations
 
-Settings includes **Copy prompts** and **Paste prompts**. Use these to migrate prompt definitions between compatible extension installations.
+Use **Copy prompts** and **Paste prompts** in Settings to transfer configurations between compatible installations. The transfer preserves **names, prompt text, colors, and order**, but not bookmarks.
 
-The transfer includes **names, prompt text, colors, and order**. It does **not** transfer bookmarks. Pasting replaces the destination prompt set after confirmation and assigns new prompt identifiers, so existing bookmark associations in that installation may no longer work. Review your destination prompts and regenerate bookmarks afterward. This is a configuration transfer, not a GitHub context backup.
+After confirmation, pasting **replaces** the destination prompts and assigns new IDs. Existing bookmark associations may break; inspect the imported prompts and recreate their bookmarks. This transfers extension configuration, not GitHub context files.
 
 ## Colored bookmarks and tab indicators
 
 ### Create and maintain bookmark launchers
 
-For a nonempty saved prompt, use **Add bookmark** in Settings. Prompt Launcher places its bookmark at the far left of Chrome's bookmarks bar. You can update/refresh or delete an individual prompt bookmark, or use **Delete all bookmarks** to remove the extension's own bookmarks without deleting unrelated browser bookmarks.
+In Settings, select **Add bookmark** for a saved prompt with nonempty text. The extension places it at the far left of Chrome's bookmarks bar. You can refresh or delete individual bookmarks, or use **Delete all bookmarks** to remove extension-created bookmarks without affecting unrelated ones.
 
-Bookmarks use the selected prompt color. Bookmark color is intended to stay fixed; the **tab favicon** changes to indicate ChatGPT state. If a bookmark looks wrong, use its refresh/update control and allow Chrome time to update its favicon cache.
+Bookmark colors stay fixed; the **tab favicon** changes with ChatGPT's inferred state. If a bookmark's appearance is wrong, refresh it and allow Chrome's favicon cache to update.
 
-Bookmark launchers use color-specific pages hosted under `rafaelrbravo.com` to help Chrome register their favicons and redirect into ChatGPT. The prompt text itself remains in local extension storage rather than being placed in the hosted URL.
+The launchers use color-specific pages at `rafaelrbravo.com` to register favicons and redirect to ChatGPT. Prompt text stays in local extension storage, not in the hosted URL.
 
 ### Read tab indicators
 
-- **Colored icon:** Tab is associated with a saved prompt and uses its selected hue.
-- **Faded icon:** ChatGPT appears to be working.
-- **Full-color icon:** ChatGPT appears to have stopped or is awaiting attention.
+- **Colored:** Associated with a saved prompt; uses its selected hue.
+- **Faded:** ChatGPT appears to be working.
+- **Full color:** ChatGPT appears stopped or awaiting attention.
 - **Circle:** Chat mode.
 - **Square:** Work mode.
-- **Unassociated tabs:** Use a neutral indicator rather than a saved prompt's hue.
+- **Neutral:** Tab is not associated with a saved prompt.
 
-These states are inferred from ChatGPT's web interface. They are convenience signals, not authoritative proof that a request succeeded or a response is complete.
+Indicators are inferred from the ChatGPT web interface, not proof that a request succeeded or a response finished.
 
 ## Auto-Continue: long-running assignments
 

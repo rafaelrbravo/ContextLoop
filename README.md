@@ -64,7 +64,7 @@ The starter has two parts: a **global directive** that identifies the canonical 
 
 **Never store passwords, tokens, or other secrets in context files.** Private repositories can hold nonpublic project details, but are not secrets managers.
 
-### 3. Load the context
+### 3. Load it in a new ChatGPT conversation
 
 Start a new ChatGPT conversation with:
 
@@ -72,7 +72,7 @@ Start a new ChatGPT conversation with:
 
 Replace the example filename and repository. Confirm that ChatGPT actually fetched the file. If it could not, check the GitHub connection and repository permissions.
 
-### 4. Work and save
+### 4. Work normally
 
 Work normally: ask questions, research, write code, analyze documents, and make decisions. The directive instructs ChatGPT to preserve useful information. You can also request specific maintenance:
 

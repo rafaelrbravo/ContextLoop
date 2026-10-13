@@ -2,11 +2,9 @@
 
 **Persistent project memory for ChatGPT, with optional prompt launching and automated continuation.**
 
-ContextLoop is a workflow built around **plain-text context files in your own GitHub repository**. ChatGPT reads the current project context, performs your task, integrates useful decisions and progress into that file, and verifies the saved result. You can start a fresh conversation and resume where you left off.
+ContextLoop uses **plain-text files in your GitHub repository** to carry project context between ChatGPT conversations. Ask ChatGPT to load a file containing instructions for maintaining that context. As you work, those instructions direct it to record useful decisions and progress, verify GitHub updates, and report failures. Resume in a new chat by loading the latest file. Persistence depends on successful GitHub access and writes; it is not guaranteed.
 
-The optional **ChatGPT Prompt Launcher** Chrome extension adds one-click context loading, customizable colored bookmarks, tab activity indicators, prompt import/export, **Auto-Continue**, and **conversation rollover** for extended tasks.
-
-**Start with just GitHub and ChatGPT.** The extension is optional, and the context-file workflow works without it.
+The optional **ChatGPT Prompt Launcher** Chrome extension provides one-click context loading, colored bookmarks, tab activity indicators, prompt import/export, **Auto-Continue**, and **conversation rollover**. You can use ContextLoop without the extension.
 
 ## Contents
 

@@ -6,7 +6,7 @@ ContextLoop is a workflow built around **plain-text context files in your own Gi
 
 The optional **ChatGPT Prompt Launcher** Chrome extension adds one-click context loading, customizable colored bookmarks, tab activity indicators, prompt import/export, **Auto-Continue**, and **conversation rollover** for extended tasks.
 
-**Start with just GitHub and ChatGPT.** The extension is optional, and the context-file workflow works without it.
+**Start with just GitHub and ChatGPT.** The extension is optional, and the context-file workflow works without it. If you want only persistent context, follow the Quick Start; install Prompt Launcher later if you need one-click launching or browser-based continuation.
 
 ## Contents
 

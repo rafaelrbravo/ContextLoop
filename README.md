@@ -43,9 +43,9 @@ ContextLoop is not a separate AI model or a background service. ChatGPT and its 
 
 ### 1. Prepare GitHub access
 
-Create a GitHub repository for your contexts, public or private. Connect GitHub in ChatGPT and ensure the connection has permission to **read and update** the chosen repository. Exact connection controls vary by account and interface.
+Create a public or private GitHub repository for your contexts. Connect GitHub to ChatGPT with **read and write access** to that repository; connection controls vary by account and interface.
 
-A typical repository looks like:
+For example:
 
 ```text
 my-contexts/
@@ -54,38 +54,38 @@ my-contexts/
   software.txt
 ```
 
-Keep unrelated projects in separate files so loading one project does not overwhelm the conversation with information from another.
+Use separate files for unrelated projects to avoid mixing their context.
 
 ### 2. Create your first context
 
-Copy [startercontext.txt](startercontext.txt) into your own repository and rename it, for example `research.txt`. The starter contains a common **global directive** and a **project-specific context** section. Replace the sample project details with your own goals, constraints, existing progress, decisions, and unresolved questions.
+Copy [startercontext.txt](startercontext.txt) into your repository, rename it (for example, `research.txt`), and replace the sample project details with your goals, constraints, progress, decisions, and open questions.
 
-The global directive is the operating agreement: it tells ChatGPT which GitHub file is canonical, when to read it, how to integrate changes, how to verify writes, and how to report failures. The local context is the evolving project memory.
+The starter has two parts: a **global directive** that identifies the canonical GitHub file and instructs ChatGPT when to read, update, verify, and report on it; and a **project-specific context** that evolves as you work.
 
-**Do not put passwords, tokens, or other secrets in context files.** A private repository is appropriate for nonpublic project details, but it is not a secrets manager.
+**Never store passwords, tokens, or other secrets in context files.** Private repositories can hold nonpublic project details, but are not secrets managers.
 
-### 3. Load it in a new ChatGPT conversation
+### 3. Load the context
 
-Copy and customize this prompt:
+Start a new ChatGPT conversation with:
 
 > Load and read `research.txt` from my GitHub repository `your-username/my-contexts` and use it as the active project context for this conversation. Treat that GitHub file as the canonical persistent context and follow its directive.
 
-Wait for ChatGPT to confirm that it actually fetched the file. If access fails, fix the GitHub connection or repository permissions rather than assuming the context was loaded.
+Replace the example filename and repository. Confirm that ChatGPT actually fetched the file. If it could not, check the GitHub connection and repository permissions.
 
-### 4. Work normally
+### 4. Work and save
 
-Ask questions, research ideas, write code, analyze documents, and make decisions. The context directive asks ChatGPT to preserve useful durable information automatically. You can also explicitly say:
+Work normally: ask questions, research, write code, analyze documents, and make decisions. The directive instructs ChatGPT to preserve useful information. You can also request specific maintenance:
 
 - "Record that decision in the active context."
 - "Consolidate the context without losing unresolved issues."
 - "Review the current context before answering."
 - "Update the plan and preserve what remains unfinished."
 
-A successful save should be **verified by refetching the file**. If a write fails, the assistant should report the unsaved changes rather than claiming success.
+ChatGPT should **refetch the file after saving** to verify the write. If it cannot save, it should identify the unsaved changes rather than claim success.
 
 ### 5. Resume in another conversation
 
-Open a fresh chat and use the same loading prompt. ChatGPT should read the **latest canonical GitHub version**, not rely on its memory of the old conversation. This is particularly useful when chats become long, slow, or difficult to navigate.
+Start a fresh chat with the same loading prompt. ChatGPT should fetch the **latest GitHub version**, not rely on the previous conversation. This is useful when a chat becomes long, slow, or difficult to navigate.
 
 ## How context maintenance works
 

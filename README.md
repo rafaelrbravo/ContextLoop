@@ -12,7 +12,7 @@ The optional **ChatGPT Prompt Launcher** Chrome extension provides one-click con
 - [Quick start: persistent context](#quick-start-persistent-context)
 - [How ChatGPT maintains project context](#how-chatgpt-maintains-project-context)
 - [Working with multiple contexts](#working-with-multiple-contexts)
-- [Install Prompt Launcher v91](#install-prompt-launcher-v91)
+- [Optional browser tools: ChatGPT Prompt Launcher](#optional-browser-tools-chatgpt-prompt-launcher)
 - [Save, launch, and transfer prompts](#save-launch-and-transfer-prompts)
 - [Colored bookmarks and tab indicators](#colored-bookmarks-and-tab-indicators)
 - [Auto-Continue: long-running assignments](#auto-continue-long-running-assignments)
@@ -119,9 +119,24 @@ Keep separate files for distinct projects—for example, `career.txt` for opport
 
 Aliases such as "load career" are useful after establishing the repository and file mapping. In a new conversation, specify the repository and filename.
 
-## Install Prompt Launcher v91
+## Optional browser tools: ChatGPT Prompt Launcher
 
-**ChatGPT Prompt Launcher** is an optional Chrome extension that adds reusable prompt buttons to ChatGPT and supports colored bookmark launchers, tab activity indicators, prompt transfer, Auto-Continue, and conversation rollover. It automates browser interactions; it is not required to use ContextLoop's GitHub-based project context.
+**ChatGPT Prompt Launcher** is an optional Chrome extension for turning prompts you use repeatedly into easy-to-launch buttons and bookmarks. It also adds visual tab indicators and can automate repeated follow-up messages with Auto-Continue, including opening a fresh chat and resuming a loop when conversation rollover is configured. You can use ContextLoop without the extension; the extension does not store, maintain, or synchronize your project context. That work is done by ChatGPT using the GitHub context file.
+
+### How the pieces fit together
+
+A typical setup starts with the ContextLoop workflow above: create a context file in GitHub, then ask ChatGPT to load it using a prompt that names the repository and file. Save that **full loading prompt** as a Prompt Launcher button. From then on, the button can send the same prompt for you, so you don't have to find and retype it each time.
+
+The other features are optional additions to that basic workflow:
+
+1. **Prompt buttons** launch a saved instruction in the current chat; you can also open it in a new tab.
+2. **Colored bookmarks and tab indicators** make prompt-associated ChatGPT tabs easier to recognize and show an approximate working/ready state.
+3. **Auto-Continue** sends another instruction after an assistant response, useful when an assignment needs multiple rounds of work. You choose how many rounds or how much time to allow, and can specify a completion marker.
+4. **Conversation rollover** can start a successor chat after a chosen number of rounds and relaunch the saved prompt. Because the new chat does not inherit conversation history, reliable continuity depends on saving important progress in the GitHub context first.
+
+You do not need to enable every feature. Start with a saved prompt button; add bookmarks or automated continuation only if they solve a problem you actually have.
+
+### Install Prompt Launcher v91
 
 **Published package:** [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) (manifest version **0.19.40**).
 

@@ -8,9 +8,9 @@ The optional **ChatGPT Prompt Launcher** Chrome extension provides one-click con
 
 ## Contents
 
-- [What you can do](#what-you-can-do)
+- [What ContextLoop provides](#what-contextloop-provides)
 - [Quick start: persistent context](#quick-start-persistent-context)
-- [How context maintenance works](#how-context-maintenance-works)
+- [How ChatGPT maintains project context](#how-chatgpt-maintains-project-context)
 - [Working with multiple contexts](#working-with-multiple-contexts)
 - [Install Prompt Launcher v91](#install-prompt-launcher-v91)
 - [Save, launch, and transfer prompts](#save-launch-and-transfer-prompts)
@@ -21,7 +21,7 @@ The optional **ChatGPT Prompt Launcher** Chrome extension provides one-click con
 - [Troubleshooting and recovery](#troubleshooting-and-recovery)
 - [Security, privacy, and limitations](#security-privacy-and-limitations)
 
-## What you can do
+## What ContextLoop provides
 
 ContextLoop's core workflow works through ChatGPT and a GitHub repository:
 
@@ -85,7 +85,7 @@ ChatGPT should **refetch the file after saving** to verify the write. If it cann
 
 Start a fresh chat with the same loading prompt. ChatGPT should fetch the **latest GitHub version**, not rely on the previous conversation. This is useful when a chat becomes long, slow, or difficult to navigate.
 
-## How context maintenance works
+## How ChatGPT maintains project context
 
 The directive asks ChatGPT to:
 
@@ -303,7 +303,7 @@ For diagnosis, capture the extension version, exact error, tab state, visibility
 - **Rollover is not backup:** A new conversation can rely only on the last successfully verified GitHub checkpoint.
 - **Optional extension:** Context persistence requires GitHub and ChatGPT, not an additional service. The extension is browser convenience software.
 
-## Project files and versions
+## Files included in this repository
 
 - [startercontext.txt](startercontext.txt) — starter context with global directive.
 - [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) — published Chrome extension (manifest `0.19.40`).

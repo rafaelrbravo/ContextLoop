@@ -106,7 +106,9 @@ You don't need to plan the file's structure in advance. ChatGPT can organize the
 
 ### Failure recovery
 
-An attempted GitHub write is not a completed update. On failure, retain the intended changes in the conversation, refetch the latest file and its identifier, retry safely, and report anything still unsaved. Reconcile any pending changes from the previous context-status note before declaring the next turn complete.
+GitHub updates can fail—for example, if access is interrupted or the file changes during an edit. ChatGPT should verify each save rather than assume it succeeded. If an update fails, ask ChatGPT to retry and confirm the result. If it still cannot save, keep the unsaved work in the conversation before moving on. GitHub's file history can help restore an earlier version if needed.
+
+**Work discussed in ChatGPT is not saved automatically.** Until an update is confirmed, don't assume the latest decisions or progress will be available in your next conversation.
 
 ## Working with multiple contexts
 

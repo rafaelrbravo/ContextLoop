@@ -56,21 +56,19 @@ my-contexts/
 
 Use separate files for unrelated projects to avoid mixing their context.
 
-### 2. Create your first context
+### 2. Create the context file—don't prefill the project history
 
-Copy [startercontext.txt](startercontext.txt) into your repository, rename it (for example, `research.txt`), and replace the sample project details with your goals, constraints, progress, decisions, and open questions.
+Copy [startercontext.txt](startercontext.txt) into your repository and rename the copy, for example, `research.txt`. **You do not need to fill in the project-specific section yourself.** The starter provides the operating instructions; ChatGPT can build and maintain the project context as you explain your work and make progress.
 
-The starter has two parts: a **global directive** that identifies the canonical GitHub file and instructs ChatGPT when to read, update, verify, and report on it; and a **project-specific context** that evolves as you work.
+Keep unrelated projects in separate files. **Never store passwords, tokens, or other secrets in context files.** Private repositories can hold nonpublic project details, but are not secrets managers.
 
-**Never store passwords, tokens, or other secrets in context files.** Private repositories can hold nonpublic project details, but are not secrets managers.
+### 3. Load it and introduce your project
 
-### 3. Load it in a new ChatGPT conversation
+Start a new ChatGPT conversation with a prompt like this, replacing the example repository and filename and briefly describing what you're trying to do:
 
-Start a new ChatGPT conversation with:
+> Load and read `research.txt` from my GitHub repository `your-username/my-contexts` and use it as the active project context. Follow its directive. This is a new context, so don't expect me to have prewritten the project details into the file. Help me develop the context from what I tell you and the work we do; preserve important goals, constraints, decisions, progress, and open questions as they emerge. My project is: [brief description of your project and what you want to accomplish].
 
-> Load and read `research.txt` from my GitHub repository `your-username/my-contexts` and use it as the active project context for this conversation. Treat that GitHub file as the canonical persistent context and follow its directive.
-
-Replace the example filename and repository. Confirm that ChatGPT actually fetched the file. If it could not, check the GitHub connection and repository permissions.
+You don't need to summarize everything up front. Give ChatGPT enough information to begin, then add details naturally as you work. It should read the file first and verify any updates it makes. Confirm that it actually fetched the file; if it could not, check the GitHub connection and repository permissions.
 
 ### 4. Work normally
 

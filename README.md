@@ -60,7 +60,7 @@ Use separate files for unrelated projects to avoid mixing their context.
 
 Copy [startercontext.txt](startercontext.txt) into your repository and rename the copy, for example, `research.txt`. **You do not need to fill in the project-specific section yourself.** The starter provides the operating instructions; ChatGPT can build and maintain the project context as you explain your work and make progress.
 
-Keep unrelated projects in separate files. **Never store passwords, tokens, or other secrets in context files.** Private repositories can hold nonpublic project details, but are not secrets managers.
+**Never store passwords, tokens, or other secrets in context files.** A private repository can hold nonpublic project details, but it is not a secrets manager.
 
 ### 3. Load it and introduce your project
 
@@ -298,7 +298,7 @@ Use a separate context file and Prompt Launcher button/color for each project. C
 | Symptom | What to check |
 | --- | --- |
 | GitHub context will not load | Repository, filename, connection, permissions; request an explicit fetch |
-| GitHub update fails | Refetch file and SHA, retry sequentially, retain and report unsaved changes |
+| GitHub update fails | Ask ChatGPT to retry and confirm the save. Keep unsaved work in the conversation until the update succeeds. |
 | Extension will not load | Extract ZIP, select folder containing `manifest.json`, inspect `chrome://extensions` errors |
 | Sidebar buttons missing | Reload ChatGPT, check extension enabled and prompts saved |
 | Wrong bookmark icon | Refresh bookmark, allow favicon cache to update, confirm saved prompt exists |

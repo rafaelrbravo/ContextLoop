@@ -2,7 +2,7 @@
 
 **Persistent project memory for ChatGPT, with optional prompt launching and automated continuation.**
 
-ContextLoop is a workflow built around **plain-text context files in your own GitHub repository**. ChatGPT reads the current project context, performs your task, integrates useful decisions and progress into that file, and verifies the saved result. You can start a fresh conversation and resume where you left off.
+ContextLoop is a workflow built around **plain-text context files in your own GitHub repository**. With the context directive loaded and suitable GitHub access available, you instruct ChatGPT to read the current project context, perform your task, integrate useful decisions and progress into the file, and verify the saved result. These steps depend on successful tool calls and are not automatic guarantees. You can start a fresh conversation and resume where you left off.
 
 The optional **ChatGPT Prompt Launcher** Chrome extension adds one-click context loading, customizable colored bookmarks, tab activity indicators, prompt import/export, **Auto-Continue**, and **conversation rollover** for extended tasks.
 
@@ -45,7 +45,7 @@ ContextLoop is not a separate AI model or a background service. ChatGPT and its 
 
 ### 1. Prepare GitHub access
 
-Create a GitHub repository for your contexts, public or private. Connect GitHub in ChatGPT and ensure the connection has permission to **read and update** the chosen repository. Exact connection controls vary by account and interface.
+Create a GitHub repository for your contexts, public or private. Connect GitHub in ChatGPT and ensure the connection has permission to **read and update** the chosen repository. Exact connection controls vary by account and interface. Confirm access by asking ChatGPT to fetch the file and, when ready to test persistence, make a small update and refetch it. A successful read alone does not establish write access.
 
 A typical repository looks like:
 
@@ -60,7 +60,7 @@ Keep unrelated projects in separate files so loading one project does not overwh
 
 ### 2. Create your first context
 
-Copy [startercontext.txt](startercontext.txt) into your own repository and rename it, for example `research.txt`. The starter contains a common **global directive** and a **project-specific context** section. Replace the sample project details with your own goals, constraints, existing progress, decisions, and unresolved questions.
+Copy [startercontext.txt](startercontext.txt) into your own repository and rename it, for example `research.txt`. The starter contains a common **global directive** and a **project-specific context** section. Replace the sample project details with your own goals, constraints, existing progress, decisions, and unresolved questions. In particular, update the starter's **CANONICAL STORAGE** fields: the template initially says storage is *Not configured*. Set the repository and file path to your actual destination before relying on cross-chat persistence.
 
 The global directive is the operating agreement: it tells ChatGPT which GitHub file is canonical, when to read it, how to integrate changes, how to verify writes, and how to report failures. The local context is the evolving project memory.
 
@@ -83,7 +83,7 @@ Ask questions, research ideas, write code, analyze documents, and make decisions
 - "Review the current context before answering."
 - "Update the plan and preserve what remains unfinished."
 
-A successful save should be **verified by refetching the file**. If a write fails, the assistant should report the unsaved changes rather than claiming success.
+A successful save should be **verified by refetching the file** and confirming the intended changes are present. If a write fails, the assistant should report the unsaved changes rather than claiming success. The status message alone is not evidence that GitHub was updated.
 
 ### 5. Resume in another conversation
 
@@ -91,7 +91,7 @@ Open a fresh chat and use the same loading prompt. ChatGPT should read the **lat
 
 ## How context maintenance works
 
-The intended cycle is:
+The directive requests the following cycle; each step depends on ChatGPT correctly following the instructions and on the required GitHub operations succeeding:
 
 1. **Read** the current canonical GitHub file and its blob SHA.
 2. **Do the substantive work** requested by the user.

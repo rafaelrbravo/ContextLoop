@@ -100,9 +100,9 @@ The task comes first; context maintenance records its useful results. The global
 
 ### What belongs in a context?
 
-Keep objectives, constraints, relevant preferences, decisions and rationale, completed work, rejected approaches, open tasks, failures, and recovery instructions. Summarize repetitive discussion; distinguish confirmed results from hypotheses and tentative plans.
+Think of the context as a concise project notebook, not a transcript of every conversation. As you work, ChatGPT can keep track of what you're trying to achieve, important constraints and preferences, decisions and why you made them, what you've completed or ruled out, what remains uncertain, and what to do next. It can also record failures and how to recover from them.
 
-For larger projects, use sections such as **Goal**, **Constraints**, **Current state**, **Completed**, **Open questions**, **Next steps**, and **Lessons learned**. Git history preserves older versions while the current file stays focused.
+You don't need to plan the file's structure in advance. ChatGPT can organize the information into useful sections as the project grows, summarize repeated discussion, and distinguish confirmed results from possibilities or tentative plans. Git history lets you revisit older versions, so the current context can stay focused on what matters now.
 
 ### Failure recovery
 

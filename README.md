@@ -186,17 +186,17 @@ Indicators are inferred from the ChatGPT web interface, not proof that a request
 
 ## Auto-Continue: long-running assignments
 
-Auto-Continue repeatedly sends a configurable follow-up message **after a completed assistant response**. It is useful for multi-stage research, coding, test/fix cycles, and systematic reviews where the assistant should evaluate progress and continue.
+Auto-Continue sends a configurable follow-up **after each completed assistant response**. Use it for multi-stage research, coding, test/fix cycles, or reviews that require repeated progress checks.
 
 ### Start a loop
 
-1. Give ChatGPT a substantial initial assignment, including its goal, constraints, and completion criteria.
-2. Open Auto-Continue using the **repeat-style button beside the composer + button**.
-3. Review the **Continuation prompt**, **Cycles**, **Timeout (minutes)**, **Rollover every N cycles**, and **Stop string** fields.
-4. Click **Run**. Opening the settings panel alone does not start a loop.
-5. Watch the progress and status text. Click **Cancel loop** to stop manually.
+1. Give ChatGPT the assignment, constraints, and completion criteria.
+2. Click the **repeat-style button beside the composer + button**.
+3. Set the **Continuation prompt**, **Cycles**, **Timeout (minutes)**, **Rollover every N cycles**, and **Stop string**.
+4. Click **Run**; opening the panel alone does not start the loop.
+5. Monitor status and progress. Use **Cancel loop** to stop manually.
 
-A useful continuation prompt is:
+Example continuation prompt:
 
 > Continue working toward the original assignment. Review progress and remaining tasks, and make substantive progress before stopping. When the assignment is genuinely complete, output AUTOCONTINUE_COMPLETE on its own line.
 
@@ -204,56 +204,53 @@ A useful continuation prompt is:
 
 | Setting | Behavior |
 | --- | --- |
-| Continuation prompt | The message sent on each subsequent cycle |
-| Cycles | Maximum cumulative continuation messages; **0 or a negative integer means unlimited** |
-| Timeout (minutes) | Maximum overall elapsed time; **0 or a negative value means unlimited** |
-| Rollover every N cycles | Open a successor conversation after every N completed cycles; **0 or negative disables rollover** |
-| Stop string | A marker that stops the loop when emitted as a standalone line in a completed assistant reply |
-| Run | Start the loop using the current settings |
-| Cancel loop | End the active loop manually |
+| Continuation prompt | Message sent on each subsequent cycle |
+| Cycles | Maximum cumulative continuation messages; **0 or negative means unlimited** |
+| Timeout (minutes) | Overall elapsed-time limit; **0 or negative means unlimited** |
+| Rollover every N cycles | Start a successor conversation after every N completed cycles; **0 or negative disables rollover** |
+| Stop string | Stop when this marker appears alone on a line in a completed assistant reply |
+| Run / Cancel loop | Start the configured loop / stop it manually |
 
-The extension persists the entered settings. Unlimited settings remove the corresponding limit; they do **not** bypass ChatGPT account quotas or guarantee indefinite operation.
+Settings persist. Unlimited values remove those limits, **not** ChatGPT account quotas or other interruptions.
 
-**Recommended first experiment:** Use 3–5 cycles and a short timeout with a harmless task. Confirm the continuation messages submit correctly and that the stop marker works before attempting long unattended runs.
+First test a harmless task with **3–5 cycles and a short timeout**. Check that continuation and stop detection work before leaving a long loop unattended.
 
 ### Completion markers
 
-The default marker is `AUTOCONTINUE_COMPLETE`. Tell ChatGPT to output that exact string **on a line by itself only when the assignment is finished**. Avoid placing the marker as a standalone line in ordinary intermediate responses, because it may terminate the loop prematurely.
-
-If the task is open-ended, use a cycle or timeout limit instead of relying solely on the model to declare completion.
+The default is `AUTOCONTINUE_COMPLETE`. Instruct ChatGPT to emit it **alone on a line, only after finishing**. A standalone marker in an intermediate reply may stop the loop early. For open-ended work, use cycle or timeout limits rather than relying only on self-declared completion.
 
 ### Important operating constraints
 
-Auto-Continue depends on the browser tab and ChatGPT's current page structure. It can fail when ChatGPT changes its composer, response markup, or submission controls; when a tab is closed or navigated away; or when a rate/usage limit interrupts work. The extension's loop is not an independent scheduled background job. Review outputs, especially before allowing consequential file writes, external actions, or expensive operations.
+Auto-Continue depends on an open browser tab and ChatGPT's page structure. Changes to composer, response markup, or submit controls; navigation or tab closure; and rate or usage limits can interrupt it. It is **not a scheduled background job**. Review outputs before consequential file writes, external actions, or expensive operations.
 
 ## Automatic conversation rollover
 
-Rollover is designed to reduce the burden of very long ChatGPT conversations. After a specified number of completed continuation cycles, the extension can open a **new conversation**, relaunch the **same saved Prompt Launcher prompt**, and resume Auto-Continue.
+After a configured number of completed cycles, rollover can open a **new chat**, relaunch the **same saved Prompt Launcher prompt**, and resume Auto-Continue. It helps manage long conversations; it does not transfer their history.
 
 ### Prerequisites
 
-- Start from a tab associated with a **saved Prompt Launcher prompt** (ideally your fully qualified ContextLoop loading prompt).
-- Ensure that prompt reliably loads the canonical GitHub context.
-- Make sure the assistant saves and verifies important progress before rollover.
-- Set a **positive** value for **Rollover every N cycles**.
+- Start in a tab associated with a **saved prompt**, preferably the full ContextLoop loading prompt.
+- Confirm that prompt loads the canonical GitHub context.
+- Save and verify important progress before rollover.
+- Set **Rollover every N cycles** to a positive number.
 
-Rollover is not merely a visual tab switch: the new conversation must reconstruct its working state from the saved context and the relaunch prompt. **Anything not successfully checkpointed may be lost.**
+The new chat reconstructs its state from the saved prompt and GitHub context. **Uncheckpointed work may be lost.**
 
 ### What the handoff attempts to preserve
 
-The v91 implementation carries forward the original loop start time, cumulative completed cycles, configured limits, continuation message, stop string, and saved prompt identity. It opens a successor tab, waits for the relaunched prompt to produce a completed response, and then resumes continuation. The predecessor is intended to close only after the successor confirms the loop resumed; if handoff fails, the predecessor may remain available for recovery.
+The v91 handoff carries the original loop start time, cumulative completed cycles, limits, continuation prompt, stop string, and saved prompt identity. It opens a successor tab, waits for the relaunched prompt to finish, then resumes the loop. The predecessor should close only after the successor confirms resumption; if handoff fails, it may remain open for recovery.
 
-The new tab's **conversation history is not copied**. The canonical GitHub file is what makes continuity possible.
+**Conversation history is not copied.** Continuity depends on the canonical GitHub file.
 
 ### Choosing an interval
 
-There is no established universal ChatGPT conversation-length threshold. A practical starting point is **30 cycles**; **40–50** may be preferable if frequent new-chat creation causes failures. Test with a small interval first, then adjust based on actual browser behavior.
+There is no universal ChatGPT conversation-length threshold. Try **30 cycles** initially; **40–50** may work better if frequent new chats cause problems. Test a small interval before committing to a long run.
 
-A good assignment instruction is:
+Suggested assignment instruction:
 
 > Work systematically, maintain an accurate completed/remaining checklist in the active GitHub context, and verify the checkpoint before any conversation rollover. Do not repeat already completed work. Output AUTOCONTINUE_COMPLETE only when all completion criteria are met.
 
-**Rollover does not circumvent model usage limits.** New-chat creation itself can fail or encounter throttling. It is best treated as a recovery/organization feature, not a guarantee of unlimited work.
+Rollover **does not bypass usage limits**. New-chat creation can fail or be throttled, so treat it as an organizational and recovery aid, not a guarantee of unlimited work.
 
 ## Recommended workflows
 

@@ -256,63 +256,63 @@ Rollover **does not bypass usage limits**. New-chat creation can fail or be thro
 
 ### Research or literature review
 
-Keep a context with scope, search strategy, verified sources, conclusions, rejected leads, and open questions. Ask ChatGPT to search systematically, record coverage, and continue from the next unreviewed item. Use Auto-Continue with finite limits. Preserve citations and distinguish verified findings from leads requiring confirmation.
+Record scope, search strategy, verified sources, conclusions, rejected leads, and open questions. Search systematically, track coverage, and resume at the next unreviewed item. Use finite Auto-Continue limits, retain citations, and separate confirmed findings from unverified leads.
 
 ### Software development
 
-Track repository, architecture, coding conventions, tests run, known failures, and next steps. Ask ChatGPT to implement and test one meaningful increment per cycle, update the checkpoint, and avoid repeating solved bugs. Review diffs and tests; do not interpret repeated assistant messages as proof that code was validated.
+Track the repository, architecture, conventions, tests run, failures, and next steps. Implement and test one meaningful increment per cycle, checkpoint progress, and avoid revisiting solved bugs. Review diffs and test results; repeated assistant replies do not prove validation.
 
 ### Career or opportunity discovery
 
-Track geographic constraints, organizations reviewed, postings identified, exclusions, and remaining coverage. Ask for exhaustive, systematic exploration rather than revisiting the same leads. Use the context to record what was checked and when; verify live postings separately.
+Record geographic constraints, organizations and postings reviewed, exclusions, and remaining coverage. Explore systematically rather than recycle leads. Note what was checked and when, and verify live postings separately.
 
 ### Writing and long documents
 
-Store target audience, outline, style constraints, completed sections, outstanding revisions, and source verification status. Continue one section or verification pass at a time. Preserve important source corrections so they are not reintroduced in later conversations.
+Keep the audience, outline, style constraints, completed sections, pending revisions, and source-verification status. Work section by section or audit pass by audit pass, preserving corrections across conversations.
 
 ### Managing several projects
 
-Give each project its own context file and Prompt Launcher button/color. Use a separate cross-project synthesis conversation when needed rather than merging unrelated project histories.
+Use a separate context file and Prompt Launcher button/color for each project. Compare projects in a separate synthesis chat rather than merge unrelated histories.
 
 ## Troubleshooting and recovery
 
 | Symptom | What to check |
 | --- | --- |
-| GitHub context does not load | Confirm the repository name, filename, GitHub connection, and permissions; request an explicit fetch |
-| GitHub update fails | Refetch the latest file and SHA; retry sequentially; retain unsaved changes and report them |
-| Extension does not load | Extract the ZIP and select the folder with `manifest.json`; check `chrome://extensions` errors |
-| Sidebar buttons missing | Reload ChatGPT, verify extension enabled, and check that prompts were saved |
-| Bookmark shows wrong icon | Refresh/update that bookmark; allow favicon caching; verify the saved prompt exists |
-| Prompt does not submit | Check the current ChatGPT page, enabled composer, and whether the extension's selectors still match |
-| Auto-Continue appears stuck | Check whether ChatGPT is still generating, a response has actually completed, or an error/survey has altered the page |
-| "Send unavailable" | The extension may not recognize an otherwise enabled Send button; avoid duplicate manual/automatic submissions |
-| "Too many requests" or "You've hit your limit" | Stop or pause automation, preserve progress, and retry later; these errors do not establish a specific quota |
-| Rollover fails | Check that the originating tab has a saved prompt identity and that its canonical context checkpoint was verified |
-| Prompt transfer breaks bookmarks | Recreate/refresh bookmarks after pasting prompts; bookmark IDs are not transferred |
-| Multiple icons or strange tab behavior | Disable duplicate Prompt Launcher installations |
+| GitHub context will not load | Repository, filename, connection, permissions; request an explicit fetch |
+| GitHub update fails | Refetch file and SHA, retry sequentially, retain and report unsaved changes |
+| Extension will not load | Extract ZIP, select folder containing `manifest.json`, inspect `chrome://extensions` errors |
+| Sidebar buttons missing | Reload ChatGPT, check extension enabled and prompts saved |
+| Wrong bookmark icon | Refresh bookmark, allow favicon cache to update, confirm saved prompt exists |
+| Prompt will not submit | ChatGPT page, enabled composer, and extension selectors |
+| Auto-Continue stuck | Ongoing generation, incomplete response, or changed page due to error/survey |
+| "Send unavailable" | Extension may miss an enabled Send button; avoid duplicate manual/automatic sends |
+| "Too many requests" or "You've hit your limit" | Pause, save progress, retry later; message does not identify a specific quota |
+| Rollover fails | Saved prompt identity on originating tab and verified canonical checkpoint |
+| Bookmarks break after prompt transfer | Recreate/refresh bookmarks; IDs do not transfer |
+| Multiple icons or unusual tab behavior | Disable duplicate extension installations |
 
-**When diagnosing a failure**, capture the extension version, exact error text, current tab state, whether ChatGPT's native Stop/Send control is visible, and the last verified GitHub checkpoint. Do not assume that a stalled loop means the assistant made no progress, or that a visible completed answer means the extension successfully detected completion.
+For diagnosis, capture the extension version, exact error, tab state, visibility of ChatGPT's native Stop/Send control, and last verified GitHub checkpoint. A stalled loop may still have made progress; a completed-looking response may not have been detected by the extension.
 
 ## Security, privacy, and limitations
 
-- **You control the canonical data:** Your GitHub repository stores the plain-text contexts. Git commit history provides versioning and rollback.
-- **Private does not mean secret-proof:** Connected tools and anyone with repository access can potentially read its contents. Avoid credentials, access tokens, sensitive personal data, and unnecessary confidential information.
-- **GitHub access matters:** A read-only connection can load context but cannot persist updates. Check permissions before relying on continuity.
-- **Prompt Launcher stores prompt definitions locally:** Copy/paste transfer moves definitions between installations; it does not synchronize your GitHub contexts.
-- **Bookmark redirects use a hosted domain:** The extension's bookmark color mechanism relies on `rafaelrbravo.com`; review that behavior if it affects your privacy requirements.
-- **The extension interacts with ChatGPT's interface:** Website changes, focus behavior, Chrome throttling, browser restarts, or account limits can interrupt automation.
-- **Context instructions are not guarantees:** ChatGPT can omit details, misunderstand state, fail tool calls, or make imperfect summaries. Inspect important changes and verify important facts independently.
-- **Rollover is not a backup:** Only the last successfully verified GitHub state is reliably available to a fresh conversation.
-- **No external service is required for context persistence beyond GitHub and ChatGPT:** The extension is optional browser convenience software; it does not replace GitHub as the context store.
+- **Canonical storage:** Plain-text contexts live in your GitHub repository; commit history supports rollback.
+- **Privacy:** Repository access and connected tools may expose contents. Do not store credentials, tokens, sensitive personal information, or unnecessary confidential material—even in private repositories.
+- **Permissions:** Read-only GitHub access can load context but cannot save updates.
+- **Local prompt storage:** Prompt Launcher stores prompt definitions locally; copy/paste transfers definitions, not GitHub contexts.
+- **Hosted bookmark redirects:** Color-specific bookmarks rely on `rafaelrbravo.com`; review this dependency for your privacy needs.
+- **Browser dependence:** Interface changes, focus issues, Chrome throttling, restarts, and account limits can interrupt automation.
+- **Fallible instructions:** ChatGPT may omit information, misunderstand state, fail tool calls, or summarize imperfectly. Review consequential changes and verify facts.
+- **Rollover is not backup:** A new conversation can rely only on the last successfully verified GitHub checkpoint.
+- **Optional extension:** Context persistence requires GitHub and ChatGPT, not an additional service. The extension is browser convenience software.
 
 ## Project files and versions
 
-- [startercontext.txt](startercontext.txt) — copyable starting context with the global directive.
-- [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) — current Chrome extension archive (manifest version `0.19.40`).
+- [startercontext.txt](startercontext.txt) — starter context with global directive.
+- [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) — published Chrome extension (manifest `0.19.40`).
 - [LICENSE](LICENSE) — Apache License 2.0.
 
-The instructions here describe the published v91 package. Some advanced behaviors are inherently dependent on ChatGPT's current website and should be tested in your browser before trusting unattended workflows.
+This README describes v91. Test website-dependent features in your browser before relying on unattended automation.
 
 ## License
 
-ContextLoop is licensed under the **Apache License, Version 2.0**. See [LICENSE](LICENSE).
+ContextLoop uses the **Apache License, Version 2.0**. See [LICENSE](LICENSE).

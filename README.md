@@ -29,7 +29,7 @@ ContextLoop's core workflow works through ChatGPT and a GitHub repository:
 - **Context maintenance:** Have ChatGPT reconcile new information with the canonical GitHub file, verify saves by rereading it, and use Git history to recover earlier versions.
 - **Multiple projects:** Keep separate context files for unrelated projects and explicitly switch between them.
 
-The optional Chrome extension adds browser conveniences:
+The optional **ChatGPT Prompt Launcher** Chrome extension adds browser conveniences:
 
 - **Prompt buttons and colored bookmarks:** Launch reusable prompts from the ChatGPT sidebar or a Chrome bookmark.
 - **Tab indicators:** Recognize prompt-associated tabs and distinguish working from ready states.

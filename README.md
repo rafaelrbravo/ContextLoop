@@ -72,7 +72,7 @@ You don't need to summarize everything up front. Give ChatGPT enough information
 
 ### 4. Work normally
 
-Work normally: ask questions, research, write code, analyze documents, and make decisions. The directive instructs ChatGPT to preserve useful information. You can also request specific maintenance:
+Ask questions, research, write code, analyze documents, and make decisions as you normally would. The directive tells ChatGPT to preserve useful information. You can also request specific maintenance:
 
 - "Record that decision in the active context."
 - "Consolidate the context without losing unresolved issues."

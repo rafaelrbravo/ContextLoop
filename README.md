@@ -152,7 +152,9 @@ Keep the extracted folder in place; Chrome loads the extension from it. The exte
 
 ## Save, launch, and transfer prompts
 
-### Create a saved context launcher
+A saved prompt is reusable instruction text that Prompt Launcher sends to ChatGPT. For ContextLoop, it is usually the full prompt that tells ChatGPT which GitHub repository and context file to load. The button saves that instruction, not the project context itself; the GitHub file remains the persistent record between conversations.
+
+### Save your first context-loading prompt
 
 Open Settings from the toolbar icon:
 
@@ -164,7 +166,7 @@ Open Settings from the toolbar icon:
 
 The name is only a label; the prompt text is what ChatGPT receives. You can also save non-context prompts, such as code review or writing instructions. Drag the handles in Settings to reorder prompts; Chrome bookmarks do not move with them.
 
-### Launch behavior
+### Launch a saved prompt
 
 - **Click:** Send the saved prompt in the current ChatGPT tab.
 - **Ctrl-click or middle-click:** Open it in a new tab using Chrome's native behavior.
@@ -172,7 +174,7 @@ The name is only a label; the prompt text is what ChatGPT receives. You can also
 
 The extension submits prompts but does not read or synchronize GitHub. ChatGPT uses its connected GitHub tools to do that work.
 
-### Copy and paste prompts between installations
+### Transfer prompts to another installation
 
 Use **Copy prompts** and **Paste prompts** in Settings to transfer configurations between compatible installations. The transfer preserves **names, prompt text, colors, and order**, but not bookmarks.
 

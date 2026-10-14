@@ -2,7 +2,7 @@
 
 **Persistent project memory for ChatGPT, with optional prompt launching and automated continuation.**
 
-ContextLoop is a workflow built around **plain-text context files in your own GitHub repository**. ChatGPT reads the current project context, performs your task, integrates useful decisions and progress into that file, and verifies the saved result. You can start a fresh conversation and resume where you left off.
+ContextLoop is a workflow built around **Markdown (`.md`) context files in your own GitHub repository**. ChatGPT reads the current project context, performs your task, integrates useful decisions and progress into that file, and verifies the saved result. You can start a fresh conversation and resume where you left off.
 
 The optional **ChatGPT Prompt Launcher** Chrome extension adds one-click context loading, customizable colored bookmarks, tab activity indicators, prompt import/export, **Auto-Continue**, and **conversation rollover** for extended tasks.
 
@@ -51,16 +51,16 @@ A typical repository looks like:
 
 ```text
 my-contexts/
-  research.txt
-  career.txt
-  software.txt
+  research.md
+  career.md
+  software.md
 ```
 
 Keep unrelated projects in separate files so loading one project does not overwhelm the conversation with information from another.
 
 ### 2. Create your first context
 
-Copy [startercontext.txt](startercontext.txt) into your own repository and rename it, for example `research.txt`. The starter contains a common **global directive** and a **project-specific context** section. Replace the sample project details with your own goals, constraints, existing progress, decisions, and unresolved questions.
+Copy [startercontext.md](startercontext.md) into your own repository and rename it, for example `research.md`. The starter contains a common **global directive** and a **project-specific context** section. Replace the sample project details with your own goals, constraints, existing progress, decisions, and unresolved questions.
 
 The global directive is the operating agreement: it tells ChatGPT which GitHub file is canonical, when to read it, how to integrate changes, how to verify writes, and how to report failures. The local context is the evolving project memory.
 
@@ -70,7 +70,7 @@ The global directive is the operating agreement: it tells ChatGPT which GitHub f
 
 Copy and customize this prompt:
 
-> Load and read `research.txt` from my GitHub repository `your-username/my-contexts` and use it as the active project context for this conversation. Treat that GitHub file as the canonical persistent context and follow its directive.
+> Load and read `research.md` from my GitHub repository `your-username/my-contexts` and use it as the active project context for this conversation. Treat that GitHub file as the canonical persistent context and follow its directive.
 
 Wait for ChatGPT to confirm that it actually fetched the file. If access fails, fix the GitHub connection or repository permissions rather than assuming the context was loaded.
 
@@ -115,20 +115,24 @@ A GitHub update is not complete just because a tool call was attempted. If the u
 
 ## Working with multiple contexts
 
-Maintain separate files for different areas of work. For example, `career.txt` may track opportunities and rejected options, while `software.txt` tracks APIs, tests, and bugs.
+Maintain separate files for different areas of work. For example, `career.md` may track opportunities and rejected options, while `software.md` tracks APIs, tests, and bugs.
 
-- **Switch active context:** "Load `software.txt` from `your-username/my-contexts` and make it active."
-- **Consult without switching:** "Read `career.txt` for relevant constraints, but keep `research.txt` active."
+- **Switch active context:** "Load `software.md` from `your-username/my-contexts` and make it active."
+- **Consult without switching:** "Read `career.md` for relevant constraints, but keep `research.md` active."
 - **Cross-project synthesis:** "Compare the decisions in these two contexts; don't merge their files."
 - **Consolidate:** "Remove duplication and obsolete statements from the active local context, preserving important history and unresolved work."
 
 Short aliases like "load career" are convenient after the repository/file mapping is established, but a fresh conversation should use a fully qualified repository and filename.
+
+Markdown is the recommended format for project contexts. Use lightweight headings to distinguish current state, decisions, open questions, and next steps. JSON or other structured files may remain in their native formats.
 
 ## Install Prompt Launcher v91
 
 **Current published package:** [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) — extension manifest version **0.19.40**.
 
 The extension is distributed as an **unpacked Chrome extension**, not through the Chrome Web Store.
+
+**Markdown migration note:** Saved context-loading prompts should use `.md` filenames. The packaged v91 extension has not yet been rebuilt or verified to use `.md` for any internally generated default filename; its source is currently distributed only inside the ZIP.
 
 1. Download the ZIP and extract it into a permanent directory.
 2. In Chrome, open `chrome://extensions`.
@@ -316,7 +320,7 @@ Give each project its own context file and Prompt Launcher button/color. Use a s
 
 ## Project files and versions
 
-- [startercontext.txt](startercontext.txt) — copyable starting context with the global directive.
+- [startercontext.md](startercontext.md) — copyable starting context with the global directive.
 - [ChatGPT-Prompt-Launcher-v91.zip](ChatGPT-Prompt-Launcher-v91.zip) — current Chrome extension archive (manifest version `0.19.40`).
 - [LICENSE](LICENSE) — Apache License 2.0.
 

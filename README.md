@@ -222,7 +222,9 @@ A useful continuation prompt is:
 | Run | Start the loop using the current settings |
 | Cancel loop | End the active loop manually |
 
-The extension persists the entered settings. Unlimited settings remove the corresponding limit; they do **not** bypass ChatGPT account quotas or guarantee indefinite operation.
+**Saving settings:** Editing Auto-Continue fields (including restoring defaults) changes only the current panel. Clicking **Run** both saves the displayed settings for future tabs and starts the loop; there is no separate Save button or automatic save while editing. A manually opened new tab loads the last settings saved by Run. During automatic rollover, the successor tab inherits the active loop's settings snapshot, even if preferences were subsequently changed elsewhere.
+
+Unlimited settings remove the corresponding limit; they do **not** bypass ChatGPT account quotas or guarantee indefinite operation.
 
 **Recommended first experiment:** Use 3–5 cycles and a short timeout with a harmless task. Confirm the continuation messages submit correctly and that the stop marker works before attempting long unattended runs.
 

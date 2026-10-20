@@ -210,6 +210,14 @@ A useful continuation prompt is:
 
 > Continue working toward the original assignment. Review progress and remaining tasks, and make substantive progress before stopping. When the assignment is genuinely complete, output AUTOCONTINUE_COMPLETE on its own line.
 
+### Plan before starting a substantial loop
+
+For multi-stage work, **agree on a detailed plan with ChatGPT before enabling Auto-Continue**. Work through implementation choices, interfaces, dependencies, likely obstacles, and acceptance tests in advance. Divide the assignment into concrete stages, estimate how many continuation cycles each stage should take, and identify what a completed stage looks like. These estimates are planning aids, not hard deadlines; compare actual progress against them and revise when necessary. This preparation helps keep subsequent cycles focused on execution rather than repeatedly reconsidering the approach.
+
+**Ask ChatGPT to save the agreed plan, stage-by-stage cycle estimates, decisions, and completed/remaining work in the active canonical GitHub context, and verify the update before starting.** That checkpoint is especially valuable because rollover starts a new conversation without copying the previous chat history.
+
+After planning, it can be useful to **start the actual assignment in a fresh tab** using the saved Prompt Launcher context-loading prompt. This keeps the long planning discussion out of the execution conversation, potentially delaying conversation-length problems before the first rollover. Make sure the new tab loads the saved plan, then start Auto-Continue there. A fresh tab does **not** reset ChatGPT account usage limits or guarantee that new-chat creation will succeed.
+
 ### Understand each setting
 
 | Setting | Behavior |

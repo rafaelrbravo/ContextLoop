@@ -55,6 +55,7 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 migratePortableSettings().catch(e => console.warn('Settings migration failed:',e));
 
 chrome.runtime.onInstalled.addListener(async ({reason}) => {
+  await migratePortableSettings();
   const data = await chrome.storage.local.get("prompts");
   if (!Array.isArray(data.prompts)) await chrome.storage.local.set({prompts:[]});
   if (reason === "install") chrome.runtime.openOptionsPage();

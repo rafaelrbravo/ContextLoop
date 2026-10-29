@@ -1,0 +1,29 @@
+name: Unpack extension source
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'ChatGPT-Prompt-Launcher-v98.zip'
+      - '.github/workflows/unpack-extension.yml'
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract exact packaged extension source
+        run: |
+          mkdir -p extension
+          unzip -o ChatGPT-Prompt-Launcher-v98.zip -d extension
+          test -f extension/manifest.json
+          test -f extension/icons/icon16.png
+      - name: Commit extracted source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add extension
+          if ! git diff --cached --quiet; then
+            git commit -m "Track unpacked v98 extension source"
+            git push
+          fi

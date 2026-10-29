@@ -1,0 +1,28 @@
+name: Package extension
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and package
+        run: |
+          test -f extension/manifest.json
+          python3 -m json.tool extension/manifest.json > /dev/null
+          cd extension
+          zip -r "../ChatGPT-Prompt-Launcher-${GITHUB_REF_NAME}.zip" . -x '*.DS_Store'
+      - name: Publish tagged release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "ChatGPT-Prompt-Launcher-${GITHUB_REF_NAME}.zip" --generate-notes
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extension-package
+          path: ChatGPT-Prompt-Launcher-*.zip

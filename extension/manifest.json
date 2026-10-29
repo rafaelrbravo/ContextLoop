@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Prompt Launcher",
-  "version": "0.19.48",
+  "version": "0.19.99",
   "description": "Prompt launcher for ChatGPT with per-prompt colors, bookmark launchers, and working/ready tab indicators.",
   "permissions": [
     "storage",

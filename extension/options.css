@@ -1,0 +1,33 @@
+body{font:14px system-ui,sans-serif;max-width:900px;margin:32px auto;padding:0 20px;color:#202124}h1{font-size:22px}.top{display:flex;align-items:center;gap:12px;margin:18px 0 24px}.item{display:grid;grid-template-columns:180px 1fr 180px;gap:10px;align-items:start;margin:12px 0;padding:12px;border:1px solid #ddd;border-radius:10px}input,textarea,button{font:inherit}input,textarea{box-sizing:border-box;width:100%;padding:8px;border:1px solid #bbb;border-radius:6px}textarea{min-height:74px;resize:vertical}.actions{display:flex;flex-direction:column;gap:8px}button{padding:8px 10px;border:1px solid #bbb;border-radius:7px;background:#fff;cursor:pointer}button:hover{background:#f5f5f5}.delete{border-color:#d99;color:#a00}#add{margin-top:10px;font-weight:600}#status{margin-left:10px;color:#666}.note{color:#666;line-height:1.45}
+
+hr{border:0;border-top:1px solid #ddd;margin:28px 0 20px}.cleanup h2{font-size:17px;margin:0 0 8px}.cleanup{padding-bottom:24px}
+.item{grid-template-columns:220px 1fr 180px}.identity{display:grid;grid-template-columns:38px 1fr;gap:8px;align-items:center}.colorPicker{position:relative;width:34px;height:34px}.colorCircle{width:34px;height:34px;padding:0;border:3px solid #111;border-radius:50%;background:var(--prompt-color);box-shadow:none}.colorCircle:hover{background:var(--prompt-color);transform:scale(1.04)}.colorCircle:focus-visible{outline:2px solid #4d90fe;outline-offset:2px}.hueSlider{position:absolute;z-index:10;left:0;top:42px;width:170px!important;padding:0!important;border:0!important;accent-color:var(--prompt-color);background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.18);border-radius:10px!important}.hueSlider[hidden]{display:none}
+/* Hue control: make the range track itself a visual hue map. */
+.hueSlider{
+  background:linear-gradient(to right,
+    hsl(0 78% 82%),
+    hsl(60 78% 82%),
+    hsl(120 78% 82%),
+    hsl(180 78% 82%),
+    hsl(240 78% 82%),
+    hsl(300 78% 82%),
+    hsl(359 78% 82%))!important;
+  height:18px;
+  border-radius:9px!important;
+  appearance:none;
+  -webkit-appearance:none;
+}
+.hueSlider::-webkit-slider-runnable-track{height:18px;background:transparent;border-radius:9px}
+.hueSlider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;margin-top:-1px;border-radius:50%;border:3px solid #111;background:var(--prompt-color);box-shadow:0 0 0 1px #fff}
+.hueSlider::-moz-range-track{height:18px;background:transparent;border-radius:9px}
+.hueSlider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;border:3px solid #111;background:var(--prompt-color);box-shadow:0 0 0 1px #fff}
+
+.bookmarkTest{margin:18px 0 30px}.bookmarkTest h2{font-size:17px}.testActions{display:flex;gap:8px;align-items:center}#bookmarkTestStatus{margin-top:10px;color:#666}
+
+/* Prompt ordering */
+.item{grid-template-columns:30px 220px 1fr 180px}
+.dragHandle{align-self:stretch;padding:0 5px;cursor:grab;color:#666;font-size:18px;line-height:1;background:#fafafa}
+.dragHandle:active{cursor:grabbing}
+.item.dragging{opacity:.45}
+.item.dragOver{border-color:#777;box-shadow:0 0 0 2px rgba(0,0,0,.08)}
+.deleteBookmark{border-color:#bbb;color:#555}

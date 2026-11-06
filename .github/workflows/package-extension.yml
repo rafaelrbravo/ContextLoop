@@ -7,7 +7,7 @@ on:
     tags:
       - 'v*'
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: extension-package
   cancel-in-progress: false
@@ -22,8 +22,15 @@ jobs:
           set -euo pipefail
           python3 -m json.tool extension/manifest.json > /dev/null
           current=$(find . -maxdepth 1 -name 'ChatGPT-Prompt-Launcher-v[0-9]*.zip' -printf '%f\n' | sed -n 's/^ChatGPT-Prompt-Launcher-v\([0-9][0-9]*\)\.zip$/\1/p' | sort -n | tail -1)
-          next=$(( ${current:-0} + 1 ))
+          recorded=$(cat extension/package-version.txt 2>/dev/null || echo 0)
+          next=$(( (recorded > ${current:-0} ? recorded : ${current:-0}) + 1 ))
+          echo "$next" > extension/package-version.txt
           echo "PACKAGE_VERSION=$next" >> "$GITHUB_ENV"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add extension/package-version.txt
+          git commit -m "Record extension package v${next} [skip ci]"
+          if [[ "$GITHUB_REF" == refs/heads/main ]]; then git push origin HEAD:main; fi
           (cd extension && zip -qr "../ChatGPT-Prompt-Launcher-v${next}.zip" . -x '*.DS_Store')
       - uses: actions/upload-artifact@v4
         with:

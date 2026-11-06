@@ -1,0 +1,36 @@
+name: Publish extension ZIP
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: extension-package
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Build and replace repository ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool extension/manifest.json > /dev/null
+          current=$(find . -maxdepth 1 -name 'ChatGPT-Prompt-Launcher-v[0-9]*.zip' -printf '%f\n' | sed -n 's/^ChatGPT-Prompt-Launcher-v\([0-9][0-9]*\)\.zip$/\1/p' | sort -n | tail -1)
+          recorded=$(cat extension/package-version.txt 2>/dev/null || echo 0)
+          next=$(( (recorded > ${current:-0} ? recorded : ${current:-0}) + 1 ))
+          echo "$next" > extension/package-version.txt
+          rm -f ChatGPT-Prompt-Launcher-v[0-9]*.zip
+          (cd extension && zip -qr "../ChatGPT-Prompt-Launcher-v${next}.zip" . -x '*.DS_Store')
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A extension/package-version.txt ChatGPT-Prompt-Launcher-v*.zip
+          git commit -m "Publish Prompt Launcher v${next} [skip ci]"
+          git push origin HEAD:main
+          echo "PACKAGE_VERSION=$next" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: published-extension-v${{ env.PACKAGE_VERSION }}
+          path: ChatGPT-Prompt-Launcher-v${{ env.PACKAGE_VERSION }}.zip

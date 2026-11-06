@@ -1,58 +1,78 @@
-// Sync only portable preferences. Keep bookmark IDs and per-tab state on this device.
+// Portable settings sync; bookmark IDs and running sessions stay device-local.
 const SYNC_PROMPTS_KEY = 'syncedPromptsV1';
 const SYNC_AUTO_KEY = 'syncedAutoContinueV1';
-function portablePrompts(prompts) {
-  return prompts.map(({bookmarkId, ...p}) => p);
+const portablePrompts = prompts => prompts.map(({bookmarkId, ...p}) => p);
+const same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
+let queue = Promise.resolve();
+function enqueue(job) {
+  queue = queue.then(job).catch(e => console.warn('Prompt sync:', e));
+  return queue;
+}
+function combineInitial(local, remote) {
+  const result = remote.map(p => ({...p}));
+  const ids = new Set(result.map(p => p.id));
+  for (const p of local) {
+    if (!ids.has(p.id)) { result.push({...p}); ids.add(p.id); }
+  }
+  return result;
+}
+function withLocalBookmarks(prompts, local) {
+  const bookmarks = new Map(local.filter(p => p.bookmarkId).map(p => [p.id,p.bookmarkId]));
+  return prompts.map(p => ({...p, ...(bookmarks.has(p.id) ? {bookmarkId:bookmarks.get(p.id)} : {})}));
+}
+async function applyRemotePrompts(remote, initial=false) {
+  const local = (await chrome.storage.local.get('prompts')).prompts || [];
+  const merged = initial ? combineInitial(local, remote) : remote;
+  const next = withLocalBookmarks(merged, local);
+  if (!same(next, local)) await chrome.storage.local.set({prompts:next});
+  if (initial && !same(merged,remote)) await chrome.storage.sync.set({[SYNC_PROMPTS_KEY]:portablePrompts(merged)});
 }
 async function migratePortableSettings() {
-  const [local, sync] = await Promise.all([
-    chrome.storage.local.get(['prompts','plAutoContinueSettings']),
-    chrome.storage.sync.get([SYNC_PROMPTS_KEY,SYNC_AUTO_KEY])
-  ]);
-  if (!Array.isArray(sync[SYNC_PROMPTS_KEY]) && Array.isArray(local.prompts)) {
-    await chrome.storage.sync.set({[SYNC_PROMPTS_KEY]: portablePrompts(local.prompts)});
-  } else if (Array.isArray(sync[SYNC_PROMPTS_KEY])) {
-    const bookmarks = new Map((local.prompts || []).map(p => [p.id,p.bookmarkId]));
-    await chrome.storage.local.set({prompts: sync[SYNC_PROMPTS_KEY].map(p => ({
-      ...p, ...(bookmarks.has(p.id) && bookmarks.get(p.id) ? {bookmarkId:bookmarks.get(p.id)} : {})
-    }))});
-  }
-  if (sync[SYNC_AUTO_KEY] === undefined && local.plAutoContinueSettings !== undefined) {
-    await chrome.storage.sync.set({[SYNC_AUTO_KEY]:local.plAutoContinueSettings});
-  } else if (sync[SYNC_AUTO_KEY] !== undefined) {
-    await chrome.storage.local.set({plAutoContinueSettings:sync[SYNC_AUTO_KEY]});
-  }
+  return enqueue(async () => {
+    const [local,sync] = await Promise.all([
+      chrome.storage.local.get(['prompts','plAutoContinueSettings']),
+      chrome.storage.sync.get([SYNC_PROMPTS_KEY,SYNC_AUTO_KEY])
+    ]);
+    if (Array.isArray(sync[SYNC_PROMPTS_KEY])) {
+      await applyRemotePrompts(sync[SYNC_PROMPTS_KEY],true);
+    } else if (Array.isArray(local.prompts)) {
+      await chrome.storage.sync.set({[SYNC_PROMPTS_KEY]:portablePrompts(local.prompts)});
+    }
+    if (sync[SYNC_AUTO_KEY] === undefined && local.plAutoContinueSettings !== undefined) {
+      await chrome.storage.sync.set({[SYNC_AUTO_KEY]:local.plAutoContinueSettings});
+    } else if (sync[SYNC_AUTO_KEY] !== undefined && !same(local.plAutoContinueSettings,sync[SYNC_AUTO_KEY])) {
+      await chrome.storage.local.set({plAutoContinueSettings:sync[SYNC_AUTO_KEY]});
+    }
+  });
 }
-let applyingSync = false;
-chrome.storage.onChanged.addListener(async (changes, area) => {
+chrome.storage.onChanged.addListener((changes,area) => {
   if (area === 'sync') {
-    const updates = {};
-    if (changes[SYNC_PROMPTS_KEY] && Array.isArray(changes[SYNC_PROMPTS_KEY].newValue)) {
-      const local = (await chrome.storage.local.get('prompts')).prompts || [];
-      const bookmarks = new Map(local.map(p => [p.id,p.bookmarkId]));
-      updates.prompts = changes[SYNC_PROMPTS_KEY].newValue.map(p => ({
-        ...p, ...(bookmarks.get(p.id) ? {bookmarkId:bookmarks.get(p.id)} : {})
-      }));
-    }
-    if (changes[SYNC_AUTO_KEY]) updates.plAutoContinueSettings = changes[SYNC_AUTO_KEY].newValue;
-    if (Object.keys(updates).length) {
-      applyingSync = true;
-      try { await chrome.storage.local.set(updates); }
-      finally { applyingSync = false; }
-    }
-  } else if (area === 'local' && !applyingSync) {
-    const updates = {};
-    if (changes.prompts && Array.isArray(changes.prompts.newValue)) {
-      updates[SYNC_PROMPTS_KEY] = portablePrompts(changes.prompts.newValue);
-    }
-    if (changes.plAutoContinueSettings) updates[SYNC_AUTO_KEY] = changes.plAutoContinueSettings.newValue;
-    if (Object.keys(updates).length) {
-      try { await chrome.storage.sync.set(updates); }
-      catch (e) { console.warn('Settings sync unavailable:',e); }
-    }
+    enqueue(async () => {
+      if (Array.isArray(changes[SYNC_PROMPTS_KEY]?.newValue))
+        await applyRemotePrompts(changes[SYNC_PROMPTS_KEY].newValue);
+      if (changes[SYNC_AUTO_KEY] && !same(
+        (await chrome.storage.local.get('plAutoContinueSettings')).plAutoContinueSettings,
+        changes[SYNC_AUTO_KEY].newValue))
+        await chrome.storage.local.set({plAutoContinueSettings:changes[SYNC_AUTO_KEY].newValue});
+    });
+  } else if (area === 'local') {
+    enqueue(async () => {
+      const updates = {};
+      if (Array.isArray(changes.prompts?.newValue)) {
+        const portable = portablePrompts(changes.prompts.newValue);
+        const remote = (await chrome.storage.sync.get(SYNC_PROMPTS_KEY))[SYNC_PROMPTS_KEY];
+        if (!same(portable,remote)) updates[SYNC_PROMPTS_KEY] = portable;
+      }
+      if (changes.plAutoContinueSettings) {
+        const value = changes.plAutoContinueSettings.newValue;
+        const remote = (await chrome.storage.sync.get(SYNC_AUTO_KEY))[SYNC_AUTO_KEY];
+        if (!same(value,remote)) updates[SYNC_AUTO_KEY] = value;
+      }
+      if (Object.keys(updates).length) await chrome.storage.sync.set(updates);
+    });
   }
 });
-migratePortableSettings().catch(e => console.warn('Settings migration failed:',e));
+migratePortableSettings();
 
 chrome.runtime.onInstalled.addListener(async ({reason}) => {
   await migratePortableSettings();

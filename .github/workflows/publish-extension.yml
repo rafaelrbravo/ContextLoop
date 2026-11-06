@@ -33,4 +33,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: published-extension-v${{ env.PACKAGE_VERSION }}
-          path: ChatGPT-Prompt-Launcher-v${{ env.PACKAGE_VERSION }}.zip
+          path: extension/

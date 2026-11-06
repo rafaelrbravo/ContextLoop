@@ -26,7 +26,8 @@ jobs:
           (cd extension && zip -qr "../ChatGPT-Prompt-Launcher-v${next}.zip" . -x '*.DS_Store')
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A extension/package-version.txt ChatGPT-Prompt-Launcher-v*.zip
+          git add -A -- extension/package-version.txt
+          git add -A -- 'ChatGPT-Prompt-Launcher-v*.zip'
           git commit -m "Publish Prompt Launcher v${next} [skip ci]"
           git push origin HEAD:main
           echo "PACKAGE_VERSION=$next" >> "$GITHUB_ENV"

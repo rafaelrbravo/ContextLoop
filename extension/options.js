@@ -3,9 +3,41 @@ const DEFAULT_HUE=205;
 const DEFAULT_NEW_PROMPT='Load and read the "context.txt" context file from my private GitHub repository "username/repository" and use it as the active project context for this conversation.';
 function colorFromHue(hue){const h=((Number(hue??DEFAULT_HUE)%360)+360)%360/60,s=.78,v=.82,c=v*s,x=c*(1-Math.abs((h%2)-1)),m=v-c;let r=0,g=0,b=0;if(h<1)[r,g,b]=[c,x,0];else if(h<2)[r,g,b]=[x,c,0];else if(h<3)[r,g,b]=[0,c,x];else if(h<4)[r,g,b]=[0,x,c];else if(h<5)[r,g,b]=[x,0,c];else[r,g,b]=[c,0,x];return `rgb(${Math.round((r+m)*255)},${Math.round((g+m)*255)},${Math.round((b+m)*255)})`;}
 function promptIcon(hue){const wrap=document.createElement("div");wrap.className="promptIcon";wrap.style.setProperty("--prompt-color",colorFromHue(hue));wrap.innerHTML='<svg viewBox="0 0 64 64" aria-hidden="true"><path class="bubble" d="M8 8h48v36H29L17 55V44H8z"/><path class="bolt" d="M35 14 22 34h10l-4 16 15-23H33z"/></svg>';return wrap;}
-async function load(){const x=await chrome.storage.local.get("prompts");state.prompts=Array.isArray(x.prompts)?x.prompts:[];let changed=false;for(const p of state.prompts)if(p.hue==null){p.hue=p.value==null?DEFAULT_HUE:Math.round((1-Math.max(0,Math.min(100,Number(p.value)))/100)*240);delete p.value;changed=true;}if(changed)await chrome.storage.local.set({prompts:state.prompts});render();}
+async function load(){const x=await chrome.storage.local.get("prompts");state.prompts=Array.isArray(x.prompts)?x.prompts:[];let changed=false;for(const p of state.prompts)if(p.hue==null){p.hue=p.value==null?DEFAULT_HUE:Math.round((1-Math.max(0,Math.min(100,Number(p.value)))/100)*240);delete p.value;changed=true;}if(changed)await chrome.storage.local.set({prompts:state.prompts});render();await discoverBookmarks();}
 async function persist(message="Saved"){await chrome.storage.local.set({prompts:state.prompts});const s=document.getElementById("status");s.textContent=message;clearTimeout(persist.timer);persist.timer=setTimeout(()=>s.textContent="",1200);}
 function hostedBookmarkUrl(item){const hue=Math.round(((Number(item.hue??DEFAULT_HUE)%360)+360)%360);return `https://rafaelrbravo.com/prompt-launcher/colors/${hue}/?pl_id=${encodeURIComponent(item.id)}`;}
+function bookmarkPromptId(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname !== 'rafaelrbravo.com' || !u.pathname.startsWith('/prompt-launcher/colors/')) return null;
+    return u.searchParams.get('pl_id');
+  } catch { return null; }
+}
+async function discoverBookmarks() {
+  const tree = await chrome.bookmarks.getTree();
+  const found = new Map();
+  function walk(nodes) {
+    for (const node of nodes || []) {
+      const id = bookmarkPromptId(node.url);
+      if (id && !found.has(id)) found.set(id,node.id);
+      walk(node.children);
+    }
+  }
+  walk(tree);
+  let changed = false;
+  for (const p of state.prompts) {
+    const match = found.get(p.id);
+    if (match && p.bookmarkId !== match) { p.bookmarkId=match; changed=true; }
+    else if (!match && p.bookmarkId) { delete p.bookmarkId; changed=true; }
+  }
+  if (changed) {
+    await chrome.storage.local.set({prompts:state.prompts});
+    render();
+  }
+}
+chrome.bookmarks.onCreated.addListener(() => discoverBookmarks().catch(console.warn));
+chrome.bookmarks.onRemoved.addListener(() => discoverBookmarks().catch(console.warn));
+chrome.bookmarks.onChanged.addListener(() => discoverBookmarks().catch(console.warn));
 async function bookmarkBarId(){const tree=await chrome.bookmarks.getTree();const roots=tree?.[0]?.children||[];let bar=roots.find(x=>x.folderType==="bookmarks-bar")||roots.find(x=>/bookmark(s)? bar|favorites bar/i.test(x.title||""))||roots.find(x=>String(x.id)==="1");if(!bar)throw new Error("Could not identify the bookmarks bar.");return bar.id;}
 async function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
 async function primeFavicon(url){let tab=null;try{const primeUrl=url+(url.includes("?")?"&":"?")+"pl_prime=1";tab=await chrome.tabs.create({url:primeUrl,active:false});await wait(1800);}finally{if(tab?.id!=null){try{await chrome.tabs.remove(tab.id);}catch{}}}}

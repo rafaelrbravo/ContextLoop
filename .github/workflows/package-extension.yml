@@ -31,8 +31,7 @@ jobs:
           git add extension/package-version.txt
           git commit -m "Record extension package v${next} [skip ci]"
           if [[ "$GITHUB_REF" == refs/heads/main ]]; then git push origin HEAD:main; fi
-          (cd extension && zip -qr "../ChatGPT-Prompt-Launcher-v${next}.zip" . -x '*.DS_Store')
       - uses: actions/upload-artifact@v4
         with:
           name: extension-v${{ env.PACKAGE_VERSION }}
-          path: ChatGPT-Prompt-Launcher-v${{ env.PACKAGE_VERSION }}.zip
+          path: extension/

@@ -90,7 +90,7 @@ chrome.runtime.onMessage.addListener((message,sender,sendResponse)=>{
     const handoff=data['plRollover:'+token];
     const prompt=(data.prompts||[]).find(p=>p.id===promptId);
     if(!handoff||handoff.promptId!==promptId||!prompt?.prompt?.trim())throw Error('Missing launcher or handoff');
-    const url='https://chatgpt.com/?pl_autosend=1&pl_id='+encodeURIComponent(promptId)+'&pl_rollover='+encodeURIComponent(token);
+    const url='https://chatgpt.com/?pl_prefill=1&pl_id='+encodeURIComponent(promptId)+'&pl_rollover='+encodeURIComponent(token);
     // Keep the successor in the opener's actual window. Chrome rejects an
     // openerTabId if the destination defaults to a different focused window.
     const opener=await chrome.tabs.get(sender.tab.id);

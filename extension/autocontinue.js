@@ -115,8 +115,8 @@
   let host, root, toggle, countNode, panel, statusNode, elapsedNode, runButton, active=null, settings={...defaults}, lastPage=location.href, terminalStatus='Ready';
   // Prefer the complete conversation record over ChatGPT's virtualized DOM.
   // Only message IDs/roles are processed; no conversation content is persisted.
-  let countConversationKey='', highestObservedCount=0, historyCount=null;
-  let historyNextCheck=0, historyInFlight=false, historyRequestKey='';
+  let countConversationKey='', historyCount=null;
+  let historyNextCheck=0, historyInFlight=false;
   const roleOf = node => node?.message?.author?.role || node?.author?.role || node?.role || '';
   function countMapping(data) {
     const mapping=data?.mapping;
@@ -178,12 +178,11 @@
   }
   async function refreshHistoryCount(id) {
     if(historyInFlight || !id || Date.now()<historyNextCheck)return;
-    historyInFlight=true;historyRequestKey=id;historyNextCheck=Date.now()+10000;
+    historyInFlight=true;historyNextCheck=Date.now()+10000;
     try {
       const count=await fetchHistoryCount(id);
       if(conversationId()===id && Number.isSafeInteger(count) && count>=0){
         historyCount=count;
-        highestObservedCount=Math.max(highestObservedCount,count);
       }
     }finally{historyInFlight=false;updatePromptCount();}
   }
@@ -191,15 +190,13 @@
     if(!countNode)return;
     const key=conversationId() || location.pathname+location.search;
     if(key!==countConversationKey){
-      countConversationKey=key;highestObservedCount=0;historyCount=null;historyNextCheck=0;
+      countConversationKey=key;historyCount=null;historyNextCheck=0;
     }
-    highestObservedCount=Math.max(highestObservedCount,userMessages());
-    const count=highestObservedCount;
-    countNode.textContent=String(count);
-    const authoritative=historyCount!==null && count===historyCount;
-    countNode.title=authoritative
-      ? `${count} user prompt${count===1?'':'s'} in this conversation (conversation history)`
-      : `${count} observed user prompt${count===1?'':'s'} (estimate; complete history unavailable or updating)`;
+    const count=historyCount;
+    countNode.textContent=count===null?'—':String(count);
+    countNode.title=count===null
+      ? 'Conversation history count unavailable or loading'
+      : `${count} user prompt${count===1?'':'s'} in this conversation (conversation history)`;
     if(conversationId() && !historyInFlight && Date.now()>=historyNextCheck)
       void refreshHistoryCount(conversationId());
   }
@@ -353,7 +350,7 @@
       #pl-autocontinue-host .close{background:none;border:0;color:inherit;font-size:20px}#pl-autocontinue-host label{display:block;margin:10px 0 5px;font-weight:600}#pl-autocontinue-host .promptHead{display:flex;justify-content:space-between;align-items:center}#pl-autocontinue-host .defaultPrompt:disabled{opacity:.38;cursor:default}#pl-autocontinue-host .defaultPrompt:not(:disabled){cursor:pointer}#pl-autocontinue-host .defaultPrompt{border:1px solid #8887;border-radius:7px;padding:3px 7px;background:transparent;color:inherit;font-size:12px;font-weight:500}
       #pl-autocontinue-host textarea,#pl-autocontinue-host input{display:block;width:100%;margin-top:5px;padding:7px;border:1px solid #8887;border-radius:7px;background:var(--main-surface-primary,#fff);color:inherit}
       #pl-autocontinue-host .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}#pl-autocontinue-host .actions{display:flex;gap:8px;margin:12px 0}#pl-autocontinue-host .actions button{flex:1;border:1px solid #8887;border-radius:8px;padding:8px}#pl-autocontinue-host .run{background:#2563eb;color:white}#pl-autocontinue-host .status{font-size:12px}#pl-autocontinue-host small{opacity:.7}
-    </style><button id="toggle" type="button" aria-label="Auto-Continue" title="Auto-Continue">↻</button><span id="prompt-count" aria-label="User prompts in conversation">0</span>
+    </style><button id="toggle" type="button" aria-label="Auto-Continue" title="Auto-Continue">↻</button><span id="prompt-count" aria-label="User prompts in conversation">—</span>
     <section id="panel" hidden><div class="heading">Auto-Continue <button class="close" type="button" aria-label="Close panel">×</button></div>
     <label><span class="promptHead"><span>Continuation prompt</span><button class="defaultPrompt" data-default="prompt" type="button">Default</button></span><textarea id="prompt" rows="5"></textarea></label>
     <div class="fields"><label><span class="promptHead"><span>Cycles</span><button class="defaultPrompt" data-default="cycles" type="button">Default</button></span><input id="cycles" type="text" inputmode="numeric" placeholder="10000 (≤0: no limit)"></label><label><span class="promptHead"><span>Timeout (minutes)</span><button class="defaultPrompt" data-default="minutes" type="button">Default</button></span><input id="minutes" type="text" inputmode="decimal" placeholder="480 (≤0: no limit)"></label></div>

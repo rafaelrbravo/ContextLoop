@@ -113,7 +113,13 @@
   // consumes its published state rather than independently scanning controls.
   const isBusy = () => document.documentElement.dataset.plTrafficWorking === 'true';
   let host, root, toggle, countNode, panel, statusNode, elapsedNode, runButton, active=null, settings={...defaults}, lastPage=location.href, terminalStatus='Ready';
-  function updatePromptCount() {\n    if(!countNode)return;\n    const count=userMessages();\n    countNode.textContent=String(count);\n    countNode.title=`${count} user prompt${count===1?'':'s'} in this conversation`;\n  }\n  function updateElapsed(session=active) {
+  function updatePromptCount() {
+    if(!countNode)return;
+    const count=userMessages();
+    countNode.textContent=String(count);
+    countNode.title=`${count} user prompt${count===1?'':'s'} in this conversation`;
+  }
+  function updateElapsed(session=active) {
     if(!elapsedNode || !session)return;
     const minutes=Math.floor(Math.max(0,Date.now()-session.startedAt)/60000);
     elapsedNode.textContent=`Elapsed: ${minutes} min`;
@@ -347,8 +353,8 @@
       } catch(e) {console.warn('Rollover predecessor cleanup failed:',e);}
     }
     resumeHandoff().catch(e=>status('Rollover recovery failed: '+e.message));
-    position();
-    setInterval(()=>{if(active&&location.href!==active.url)stop('Conversation changed');if(!active && statusNode && statusNode.textContent!==terminalStatus)status(terminalStatus);updateElapsed();position();},650);
+    position();updatePromptCount();
+    setInterval(()=>{updatePromptCount();if(active&&location.href!==active.url)stop('Conversation changed');if(!active && statusNode && statusNode.textContent!==terminalStatus)status(terminalStatus);updateElapsed();position();},650);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();

@@ -113,11 +113,15 @@
   // consumes its published state rather than independently scanning controls.
   const isBusy = () => document.documentElement.dataset.plTrafficWorking === 'true';
   let host, root, toggle, countNode, panel, statusNode, elapsedNode, runButton, active=null, settings={...defaults}, lastPage=location.href, terminalStatus='Ready';
+  let countConversationKey='', highestObservedCount=0;
   function updatePromptCount() {
     if(!countNode)return;
-    const count=userMessages();
+    const key=conversationId() || location.pathname+location.search;
+    if(key!==countConversationKey){countConversationKey=key;highestObservedCount=0;}
+    highestObservedCount=Math.max(highestObservedCount,userMessages());
+    const count=highestObservedCount;
     countNode.textContent=String(count);
-    countNode.title=`${count} user prompt${count===1?'':'s'} in this conversation`;
+    countNode.title=`${count} observed user prompt${count===1?'':'s'} in this conversation (minimum; ChatGPT may virtualize older messages)`;
   }
   function updateElapsed(session=active) {
     if(!elapsedNode || !session)return;
@@ -251,7 +255,7 @@
     const r=composer?.getBoundingClientRect();if(!r?.width||!r?.height)return; // Never re-anchor to an unrelated field.
     host.style.display='block';
     // Separate overlay, never occupies the composer layout or shrinks its input.
-    const x=Math.max(4,r.left-40), y=Math.max(4,r.bottom-39);
+    const x=Math.max(28,r.left-40), y=Math.max(4,r.bottom-39);
     host.style.left=`${x}px`;host.style.top=`${y}px`;
     if(!panel.hidden) {panel.style.left='0px';panel.style.bottom='43px';}
   }
@@ -263,7 +267,7 @@
     root.innerHTML=`<style>
       #pl-autocontinue-host *{box-sizing:border-box}#pl-autocontinue-host button,#pl-autocontinue-host input,#pl-autocontinue-host textarea{font:inherit}#pl-autocontinue-host button{cursor:pointer}
       #pl-autocontinue-host #toggle{pointer-events:auto;width:34px;height:34px;border-radius:50%;border:1px solid #8887;background:var(--main-surface-primary,#fff);color:var(--text-primary,#222);font:24px system-ui;display:grid;place-items:center}
-      #pl-autocontinue-host #toggle:hover{background:var(--surface-hover,#ddd)}\n      #pl-autocontinue-host #prompt-count{position:absolute;left:38px;top:6px;min-width:18px;height:22px;padding:0 4px;border-radius:7px;background:var(--main-surface-primary,#fff);color:var(--text-primary,#222);border:1px solid #8887;display:grid;place-items:center;font:12px system-ui;pointer-events:none}
+      #pl-autocontinue-host #toggle:hover{background:var(--surface-hover,#ddd)}\n      #pl-autocontinue-host #prompt-count{position:absolute;right:38px;top:6px;min-width:18px;height:22px;padding:0 4px;border-radius:7px;background:var(--main-surface-primary,#fff);color:var(--text-primary,#222);border:1px solid #8887;display:grid;place-items:center;font:12px system-ui;pointer-events:none}
       #pl-autocontinue-host #panel{pointer-events:auto;position:absolute;width:min(340px,calc(100vw - 20px));max-height:75vh;overflow:auto;background:var(--main-surface-primary,#fff);color:var(--text-primary,#222);border:1px solid #8887;border-radius:14px;padding:14px;box-shadow:0 8px 28px #0004;font:13px system-ui}
       #pl-autocontinue-host [hidden]{display:none!important}#pl-autocontinue-host .heading{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:700}
       #pl-autocontinue-host .close{background:none;border:0;color:inherit;font-size:20px}#pl-autocontinue-host label{display:block;margin:10px 0 5px;font-weight:600}#pl-autocontinue-host .promptHead{display:flex;justify-content:space-between;align-items:center}#pl-autocontinue-host .defaultPrompt:disabled{opacity:.38;cursor:default}#pl-autocontinue-host .defaultPrompt:not(:disabled){cursor:pointer}#pl-autocontinue-host .defaultPrompt{border:1px solid #8887;border-radius:7px;padding:3px 7px;background:transparent;color:inherit;font-size:12px;font-weight:500}

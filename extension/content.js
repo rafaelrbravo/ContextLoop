@@ -150,7 +150,7 @@
   // Persistent Prompt Launcher strip in ChatGPT's left sidebar.
   const BAR_ID="chatgpt-prompt-launcher-bar";
   const BAR_STYLE_ID="chatgpt-prompt-launcher-bar-style";
-  function promptHref(item){return "https://chatgpt.com/?pl_autosend=1&pl_prompt="+encodeURIComponent(item.prompt||"")+"&pl_id="+encodeURIComponent(item.id);}
+  function promptHref(item){return "https://chatgpt.com/?pl_prefill=1&pl_prompt="+encodeURIComponent(item.prompt||"")+"&pl_id="+encodeURIComponent(item.id);}
   function ensureBarStyle(){
     if(document.getElementById(BAR_STYLE_ID))return;
     const st=document.createElement("style");st.id=BAR_STYLE_ID;st.textContent=`
@@ -205,7 +205,7 @@
   decorateRecents();
   chrome.storage.onChanged.addListener((changes,area)=>{if(area==="local"&&(changes.prompts||changes[CONVERSATION_MAP_KEY]))decorateRecents();});
 
-  if (params.get("pl_autosend") !== "1") return;
+  if (params.get("pl_prefill") !== "1" && params.get("pl_autosend") !== "1") return;
   async function resolveWantedPrompt(){
     const direct=params.get("pl_prompt")||params.get("prompt")||"";
     if(direct)return direct;
@@ -214,14 +214,21 @@
     return prompts.find(x=>x.id===promptId)?.prompt||"";
   }
   let wanted="";
-  async function bootAutosend(){
+  async function bootPrefill(){
     wanted=await resolveWantedPrompt(); if(!wanted)return;
   const editorSelectors=["#prompt-textarea",'div[contenteditable="true"][data-lexical-editor="true"]','div[contenteditable="true"][role="textbox"]',"textarea"];
-  const sendSelectors=['button[data-testid="send-button"]','button[aria-label="Send prompt"]','button[aria-label^="Send" i]'];
   const getEditor=()=>document.querySelector(editorSelectors.join(",")); const getText=e=>((e?.innerText??e?.value??"")+"").trim();
   function fillEditor(editor){editor.focus();if(editor instanceof HTMLTextAreaElement||editor instanceof HTMLInputElement){const proto=editor instanceof HTMLTextAreaElement?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;const setter=Object.getOwnPropertyDescriptor(proto,"value")?.set;if(setter)setter.call(editor,wanted);else editor.value=wanted;editor.dispatchEvent(new InputEvent("input",{bubbles:true,inputType:"insertText",data:wanted}));editor.dispatchEvent(new Event("change",{bubbles:true}));}else{const sel=window.getSelection(),range=document.createRange();range.selectNodeContents(editor);sel.removeAllRanges();sel.addRange(range);document.execCommand("insertText",false,wanted);editor.dispatchEvent(new InputEvent("input",{bubbles:true,inputType:"insertText",data:wanted}));}}
-  let attempts=0;const maxAttempts=160;const timer=setInterval(()=>{attempts++;const editor=getEditor();if(!editor){if(attempts>=maxAttempts)clearInterval(timer);return;}if(!getText(editor))fillEditor(editor);if(!getText(editor)){if(attempts>=maxAttempts)clearInterval(timer);return;}const send=document.querySelector(sendSelectors.join(","));if(send&&!send.disabled&&send.getAttribute("aria-disabled")!=="true"){clearInterval(timer);send.click();return;}if(attempts>20){editor.focus();const opts={key:"Enter",code:"Enter",keyCode:13,which:13,bubbles:true,cancelable:true};editor.dispatchEvent(new KeyboardEvent("keydown",opts));editor.dispatchEvent(new KeyboardEvent("keyup",opts));}if(attempts>=maxAttempts)clearInterval(timer);},150);
+  let attempts=0;const maxAttempts=160;const timer=setInterval(()=>{
+    attempts++;
+    const editor=getEditor();
+    if(!editor){if(attempts>=maxAttempts)clearInterval(timer);return;}
+    // Never overwrite a prompt the user has already started editing.
+    if(getText(editor)){clearInterval(timer);return;}
+    fillEditor(editor);
+    if(getText(editor)||attempts>=maxAttempts)clearInterval(timer);
+  },150);
 
   }
-  bootAutosend();
+  bootPrefill();
 })();

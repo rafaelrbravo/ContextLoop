@@ -115,90 +115,29 @@
   let host, root, toggle, countNode, panel, statusNode, elapsedNode, runButton, active=null, settings={...defaults}, lastPage=location.href, terminalStatus='Ready';
   // Prefer the complete conversation record over ChatGPT's virtualized DOM.
   // Only message IDs/roles are processed; no conversation content is persisted.
+  // The MAIN-world observer reads ChatGPT's own successful history responses.
+  // The isolated-world extension receives only the conversation ID and count.
   let countConversationKey='', historyCount=null;
-  let historyNextCheck=0, historyInFlight=false;
-  const roleOf = node => node?.message?.author?.role || node?.author?.role || node?.role || '';
-  function countMapping(data) {
-    const mapping=data?.mapping;
-    if(!mapping || typeof mapping!=='object')return null;
-    const current=data.current_node || data.currentNode;
-    if(current && mapping[current]){
-      let id=current,count=0;const seen=new Set();
-      while(id && mapping[id] && !seen.has(id)){
-        seen.add(id);
-        const node=mapping[id];
-        if(roleOf(node)==='user')count++;
-        id=node.parent;
-      }
-      return count;
-    }
-    // A mapping without a selected branch may contain regenerated branches.
-    // Avoid counting every branch as if it were part of the active conversation.
-    return null;
-  }
-  function extractPagedItems(data) {
-    const candidates=[data?.items,data?.messages,data?.turns,data?.nodes,data?.data?.items,data?.data?.messages];
-    return candidates.find(Array.isArray) || null;
-  }
-  async function fetchHistoryCount(id) {
-    const base='/backend-api/conversations/'+encodeURIComponent(id);
-    const seen=new Set(), roles=new Map();
-    let cursor=null,complete=false,anyPage=false;
-    try {
-      for(let page=0;page<100;page++){
-        const url=base+'?include_has_versions=true&num_turns=100'+(cursor?'&before='+encodeURIComponent(cursor):'');
-        const response=await fetch(url,{credentials:'include',headers:{Accept:'application/json'}});
-        if(!response.ok)break;
-        const data=await response.json();
-        const mapped=countMapping(data);
-        if(mapped!==null)return mapped;
-        const items=extractPagedItems(data);
-        if(!items)break;
-        anyPage=true;
-        for(const item of items){
-          const msg=item?.message || item;
-          const mid=msg?.id || item?.id;
-          if(mid && !roles.has(mid))roles.set(mid,roleOf(item));
-        }
-        const info=data.page_info || data.pageInfo || data.pagination || {};
-        const next=info.start_cursor || info.startCursor || info.next_cursor || info.nextCursor;
-        const hasMore=info.has_previous_page ?? info.hasPreviousPage ?? info.has_more ?? info.hasMore;
-        if(hasMore===false || (!next && items.length<100)){complete=true;break;}
-        if(!next || seen.has(next))break;
-        seen.add(next);cursor=next;
-      }
-    }catch(e){console.debug('Prompt count history endpoint unavailable:',e);}
-    if(anyPage && complete)return [...roles.values()].filter(role=>role==='user').length;
-    // Legacy API exposes a full mapping and selected current_node.
-    try {
-      const response=await fetch('/backend-api/conversation/'+encodeURIComponent(id),{credentials:'include',headers:{Accept:'application/json'}});
-      if(response.ok)return countMapping(await response.json());
-    }catch(e){console.debug('Prompt count legacy endpoint unavailable:',e);}
-    return null;
-  }
-  async function refreshHistoryCount(id) {
-    if(historyInFlight || !id || Date.now()<historyNextCheck)return;
-    historyInFlight=true;historyNextCheck=Date.now()+10000;
-    try {
-      const count=await fetchHistoryCount(id);
-      if(conversationId()===id && Number.isSafeInteger(count) && count>=0){
-        historyCount=count;
-      }
-    }finally{historyInFlight=false;updatePromptCount();}
-  }
+  window.addEventListener('message',event=>{
+    const data=event.data;
+    if(event.source!==window || event.origin!==location.origin ||
+       data?.source!=='pl-conversation-count-v1' ||
+       data.id!==conversationId() ||
+       !Number.isSafeInteger(data.count) || data.count<0)return;
+    historyCount=data.count;
+    updatePromptCount();
+  });
   function updatePromptCount() {
     if(!countNode)return;
     const key=conversationId() || location.pathname+location.search;
     if(key!==countConversationKey){
-      countConversationKey=key;historyCount=null;historyNextCheck=0;
+      countConversationKey=key;
+      historyCount=null;
     }
-    const count=historyCount;
-    countNode.textContent=count===null?'—':String(count);
-    countNode.title=count===null
-      ? 'Conversation history count unavailable or loading'
-      : `${count} user prompt${count===1?'':'s'} in this conversation (conversation history)`;
-    if(conversationId() && !historyInFlight && Date.now()>=historyNextCheck)
-      void refreshHistoryCount(conversationId());
+    countNode.textContent=historyCount===null?'—':String(historyCount);
+    countNode.title=historyCount===null
+      ? 'Waiting for complete conversation history from ChatGPT'
+      : `${historyCount} user prompt${historyCount===1?'':'s'} in this conversation (observed conversation history)`;
   }
   function updateElapsed(session=active) {
     if(!elapsedNode || !session)return;

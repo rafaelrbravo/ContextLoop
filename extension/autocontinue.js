@@ -112,33 +112,7 @@
   // The favicon Traffic Light owns the working/ready signal.  This script
   // consumes its published state rather than independently scanning controls.
   const isBusy = () => document.documentElement.dataset.plTrafficWorking === 'true';
-  let host, root, toggle, countNode, panel, statusNode, elapsedNode, runButton, active=null, settings={...defaults}, lastPage=location.href, terminalStatus='Ready';
-  // Prefer the complete conversation record over ChatGPT's virtualized DOM.
-  // Only message IDs/roles are processed; no conversation content is persisted.
-  // The MAIN-world observer reads ChatGPT's own successful history responses.
-  // The isolated-world extension receives only the conversation ID and count.
-  let countConversationKey='', historyCount=null;
-  window.addEventListener('message',event=>{
-    const data=event.data;
-    if(event.source!==window || event.origin!==location.origin ||
-       data?.source!=='pl-conversation-count-v1' ||
-       data.id!==conversationId() ||
-       !Number.isSafeInteger(data.count) || data.count<0)return;
-    historyCount=data.count;
-    updatePromptCount();
-  });
-  function updatePromptCount() {
-    if(!countNode)return;
-    const key=conversationId() || location.pathname+location.search;
-    if(key!==countConversationKey){
-      countConversationKey=key;
-      historyCount=null;
-    }
-    countNode.textContent=historyCount===null?'—':String(historyCount);
-    countNode.title=historyCount===null
-      ? 'Waiting for complete conversation history from ChatGPT'
-      : `${historyCount} user prompt${historyCount===1?'':'s'} in this conversation (observed conversation history)`;
-  }
+  let host, root, toggle, panel, statusNode, elapsedNode, runButton, active=null, settings={...defaults}, lastPage=location.href, terminalStatus='Ready';
   function updateElapsed(session=active) {
     if(!elapsedNode || !session)return;
     const minutes=Math.floor(Math.max(0,Date.now()-session.startedAt)/60000);
@@ -283,13 +257,12 @@
     root.innerHTML=`<style>
       #pl-autocontinue-host *{box-sizing:border-box}#pl-autocontinue-host button,#pl-autocontinue-host input,#pl-autocontinue-host textarea{font:inherit}#pl-autocontinue-host button{cursor:pointer}
       #pl-autocontinue-host #toggle{pointer-events:auto;width:34px;height:34px;border-radius:50%;border:1px solid #8887;background:var(--main-surface-primary,#fff);color:var(--text-primary,#222);font:24px system-ui;display:grid;place-items:center}
-      #pl-autocontinue-host #toggle:hover{background:var(--surface-hover,#ddd)}\n      #pl-autocontinue-host #prompt-count{position:absolute;right:38px;top:6px;min-width:18px;height:22px;padding:0 4px;border-radius:7px;background:var(--main-surface-primary,#fff);color:var(--text-primary,#222);border:1px solid #8887;display:grid;place-items:center;font:12px system-ui;pointer-events:none}
       #pl-autocontinue-host #panel{pointer-events:auto;position:absolute;width:min(340px,calc(100vw - 20px));max-height:75vh;overflow:auto;background:var(--main-surface-primary,#fff);color:var(--text-primary,#222);border:1px solid #8887;border-radius:14px;padding:14px;box-shadow:0 8px 28px #0004;font:13px system-ui}
       #pl-autocontinue-host [hidden]{display:none!important}#pl-autocontinue-host .heading{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:700}
       #pl-autocontinue-host .close{background:none;border:0;color:inherit;font-size:20px}#pl-autocontinue-host label{display:block;margin:10px 0 5px;font-weight:600}#pl-autocontinue-host .promptHead{display:flex;justify-content:space-between;align-items:center}#pl-autocontinue-host .defaultPrompt:disabled{opacity:.38;cursor:default}#pl-autocontinue-host .defaultPrompt:not(:disabled){cursor:pointer}#pl-autocontinue-host .defaultPrompt{border:1px solid #8887;border-radius:7px;padding:3px 7px;background:transparent;color:inherit;font-size:12px;font-weight:500}
       #pl-autocontinue-host textarea,#pl-autocontinue-host input{display:block;width:100%;margin-top:5px;padding:7px;border:1px solid #8887;border-radius:7px;background:var(--main-surface-primary,#fff);color:inherit}
       #pl-autocontinue-host .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}#pl-autocontinue-host .actions{display:flex;gap:8px;margin:12px 0}#pl-autocontinue-host .actions button{flex:1;border:1px solid #8887;border-radius:8px;padding:8px}#pl-autocontinue-host .run{background:#2563eb;color:white}#pl-autocontinue-host .status{font-size:12px}#pl-autocontinue-host small{opacity:.7}
-    </style><button id="toggle" type="button" aria-label="Auto-Continue" title="Auto-Continue">↻</button><span id="prompt-count" aria-label="User prompts in conversation">—</span>
+    </style><button id="toggle" type="button" aria-label="Auto-Continue" title="Auto-Continue">↻</button>
     <section id="panel" hidden><div class="heading">Auto-Continue <button class="close" type="button" aria-label="Close panel">×</button></div>
     <label><span class="promptHead"><span>Continuation prompt</span><button class="defaultPrompt" data-default="prompt" type="button">Default</button></span><textarea id="prompt" rows="5"></textarea></label>
     <div class="fields"><label><span class="promptHead"><span>Cycles</span><button class="defaultPrompt" data-default="cycles" type="button">Default</button></span><input id="cycles" type="text" inputmode="numeric" placeholder="10000 (≤0: no limit)"></label><label><span class="promptHead"><span>Timeout (minutes)</span><button class="defaultPrompt" data-default="minutes" type="button">Default</button></span><input id="minutes" type="text" inputmode="decimal" placeholder="480 (≤0: no limit)"></label></div>
@@ -298,7 +271,7 @@
     <div class="actions"><button class="run" id="run" type="button">Run</button><button id="cancel" type="button">Cancel loop</button></div>
     <small>Keep this ChatGPT tab open without refreshing or changing conversations.</small></section>`;
     document.body.appendChild(host);
-    toggle=root.querySelector('#'+'toggle');countNode=root.querySelector('#prompt-count');panel=root.querySelector('#'+'panel');statusNode=root.querySelector('#'+'status');elapsedNode=root.querySelector('#'+'elapsed');runButton=root.querySelector('#'+'run');
+    toggle=root.querySelector('#'+'toggle');panel=root.querySelector('#'+'panel');statusNode=root.querySelector('#'+'status');elapsedNode=root.querySelector('#'+'elapsed');runButton=root.querySelector('#'+'run');
     const fields=['prompt','cycles','minutes','stop','rollover'];
     const refreshDefaults=()=>root.querySelectorAll('[data-default]').forEach(button=>{const k=button.dataset.default;button.disabled=root.querySelector('#'+k).value===String(defaults[k]);});
     const populate=()=>{fields.forEach(k=>root.querySelector('#'+k).value=settings[k]);refreshDefaults();};
@@ -373,8 +346,8 @@
       } catch(e) {console.warn('Rollover predecessor cleanup failed:',e);}
     }
     resumeHandoff().catch(e=>status('Rollover recovery failed: '+e.message));
-    position();updatePromptCount();
-    setInterval(()=>{updatePromptCount();if(active&&location.href!==active.url)stop('Conversation changed');if(!active && statusNode && statusNode.textContent!==terminalStatus)status(terminalStatus);updateElapsed();position();},650);
+    position();
+    setInterval(()=>{if(active&&location.href!==active.url)stop('Conversation changed');if(!active && statusNode && statusNode.textContent!==terminalStatus)status(terminalStatus);updateElapsed();position();},650);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();

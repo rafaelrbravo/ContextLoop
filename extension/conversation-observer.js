@@ -45,9 +45,6 @@
     if(hasMore===false){
       publish(id,[...session.roles.values()].filter(r=>r==='user').length);
       sessions.delete(id);
-    }else if(!cursor && items.length<100 && session.pages===1){
-      publish(id,[...session.roles.values()].filter(r=>r==='user').length);
-      sessions.delete(id);
     }
   }
   const original=window.fetch;
